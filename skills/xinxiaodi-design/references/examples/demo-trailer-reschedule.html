@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 改约列表页（含入园改约弹窗）</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
+.page-sticky { position: sticky; top: 0; z-index: 50; }
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏「改约」 -->
+<div class="demo-topbar page-sticky">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_black.svg" height="12" alt="status" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="location.href='demo-trailer.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="titlebar__title">改约</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp" />
+    </span>
+  </div>
+</div>
+
+<!-- 定位栏 -->
+<div class="location-bar">
+  <img src="../assets/icons/position_green_16px.svg" class="location-bar__icon" width="16" height="16" />
+  <span class="location-bar__address" style="flex:1;">山东省青岛市市南区江西路11号山东省青岛市市南区</span>
+</div>
+
+<!-- 搜索框 -->
+<div style="padding: 8px 16px;">
+  <div class="searchbox">
+    <svg class="searchbox__icon" viewBox="0 0 24 24" fill="none" stroke="#BFC5CC" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input class="searchbox__input" placeholder="请输入柜号/运单号" />
+    <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
+  </div>
+</div>
+
+<!-- 改约卡片列表（拖车业务卡片·改约版） -->
+<div class="card-list">
+
+  <div class="card card--trailer">
+    <div class="card__location">
+      <div class="card__location-row">
+        <span class="tag tag--orange">装货点</span>
+        <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+      </div>
+      <div class="card__warehouse">【H1532】青岛平度仓</div>
+    </div>
+    <div class="card__divider card__divider--full"></div>
+    <div class="card__dispatch">
+      <div class="card__dispatch-row">
+        <span class="card__dispatch-plate">D22110100291</span>
+        <span class="card__dispatch-time">下达时间：2022/11/16 18:00</span>
+      </div>
+    </div>
+    <div class="card__waybill">
+      <div class="card__order">
+        <div class="card__order-top">
+          <span class="card__waybill-label">运单号</span>
+          <span class="card__order-sap">HECPX1233313131313545</span>
+        </div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">预约入园时间</span><span class="card__grid-value">2026-01-01 10:30:00</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-01 09:00:00</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card__waybill-actions">
+        <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#reschedule-dialog')">改约</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 入园改约弹窗（复用 dialog 组件；表单字段上下布局） -->
+<div class="dialog-overlay" id="reschedule-dialog">
+  <div class="dialog">
+    <div class="dialog__close" onclick="XUI.closeDialog('#reschedule-dialog')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#86909C" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="dialog__title">入园改约</div>
+
+    <!-- 预约入园日期（只读展示） -->
+    <div class="dialog__field">
+      <div class="dialog__field-label">预约入园日期</div>
+      <input class="input" value="2026-01-01" readonly style="height: 40px; width: 100%; background: var(--bg-1);" />
+    </div>
+
+    <!-- 预约时间段（起—止 两个时间选择） -->
+    <div class="dialog__field" style="margin-bottom: 24px;">
+      <div class="dialog__field-label">预约时间段</div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="dialog__field-select dialog__field-select--filled" style="flex: 1; height: 40px;" onclick="openTimeSheet('start')">
+          <span id="time-start-value">09:00</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <span style="color: var(--text-2); flex-shrink: 0;">—</span>
+        <div class="dialog__field-select dialog__field-select--filled" style="flex: 1; height: 40px;" onclick="openTimeSheet('end')">
+          <span id="time-end-value">10:30</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog__buttons">
+      <button class="btn btn--lg btn--primary" style="width: auto;" onclick="XUI.closeDialog('#reschedule-dialog')">提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 时间选择面板（多列滚轮：时/分），起止时间共用 -->
+<div class="sheet-overlay" id="time-sheet">
+  <div class="sheet">
+    <div class="sheet__header">
+      <span class="sheet__cancel" onclick="XUI.closeSheet('#time-sheet')">取消</span>
+      <span class="sheet__title">选择时间</span>
+      <span class="sheet__confirm" onclick="confirmTime()">确认</span>
+    </div>
+    <div class="sheet__body">
+      <div class="sheet__wheel">
+        <div class="sheet__wheel-band"></div>
+        <div class="sheet__wheel-col" id="time-hour"></div>
+        <div class="sheet__wheel-col" id="time-min"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 生成时/分滚轮项（在 ui.js 自动初始化前填充）
+function fillWheel(colId, count, activeIdx) {
+  var col = document.getElementById(colId);
+  if (!col) return;
+  var html = '';
+  for (var i = 0; i < count; i++) {
+    var v = ('0' + i).slice(-2);
+    html += '<div class="sheet__wheel-item' + (i === activeIdx ? ' sheet__wheel-item--active' : '') + '">' + v + '</div>';
+  }
+  col.innerHTML = html;
+}
+fillWheel('time-hour', 24, 9);
+fillWheel('time-min', 60, 0);
+
+// 起止时间共用一个时间面板，记录当前编辑的目标
+var currentTimeTarget = null;
+function openTimeSheet(target) {
+  currentTimeTarget = target;
+  XUI.openSheet('#time-sheet');
+}
+function confirmTime() {
+  var h = document.getElementById('time-hour').dataset.value || '00';
+  var m = document.getElementById('time-min').dataset.value || '00';
+  var val = h + ':' + m;
+  if (currentTimeTarget === 'start') document.getElementById('time-start-value').textContent = val;
+  else if (currentTimeTarget === 'end') document.getElementById('time-end-value').textContent = val;
+  XUI.closeSheet('#time-sheet');
+}
+</script>
+<script src="../ui.js"></script>
+</body>
+</html>

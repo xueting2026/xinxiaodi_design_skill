@@ -6,7 +6,7 @@
   "variantDimensions": [
     {
       "axis": "type",
-      "values": ["基础输入框", "带前缀(区号)", "带后缀(验证码)", "密码(显示/隐藏)"]
+      "values": ["基础输入框", "带前缀(区号)", "带后缀(验证码)", "密码(显示/隐藏)", "文本域(textarea)"]
     },
     {
       "axis": "state",
@@ -18,10 +18,12 @@
     "基础-filled",
     "验证码-可点击",
     "验证码-倒计时",
-    "区号-empty"
+    "区号-empty",
+    "文本域-empty",
+    "文本域-filled"
   ],
   "anatomy": {
-    "parts": ["container", "prefix", "input-field", "suffix", "placeholder"],
+    "parts": ["container", "prefix", "input-field", "suffix", "placeholder", "textarea-field(.textarea + .textarea-counter)"],
     "required": ["container", "input-field"]
   },
   "specs": {
@@ -64,6 +66,25 @@
       "fontSize": "12px",
       "activeColor": "#00AAA6",
       "disabledColor": "#7C8492"
+    },
+    "textarea": {
+      "figmaNode": "3137:57085",
+      "widthMode": "block（width:100%）",
+      "minHeight": "72px",
+      "border": "1px solid #E5E6EB（color-border-2；与 .input 同族）",
+      "radius": "var(--radius-control) / 4px",
+      "padding": "8px 12px 22px（底部留白给字数计数器）",
+      "fontSize": "14px",
+      "color": "#1D2129",
+      "lineHeight": "20px",
+      "placeholderColor": "#C9CDD4（gray-4）",
+      "resize": "none",
+      "counter": {
+        "position": "右下角（absolute right 12px bottom 8px）",
+        "fontSize": "12px",
+        "color": "#C9CDD4（text-1）",
+        "format": "N/max（max 取 textarea 的 maxlength，如 0/50），随输入更新"
+      }
     }
   },
   "interaction": {
@@ -82,6 +103,11 @@
       "countingText": "{n}s后重新发送",
       "countingColor": "#7C8492",
       "cursor": "not-allowed"
+    },
+    "textarea": {
+      "focus": { "borderColor": "#00AAA6", "boxShadow": "0 0 0 2px rgba(0,170,166,0.1)" },
+      "counter": "随输入实时更新字数 N/max；用 XUI.initTextarea('.textarea-field') 或 XUI.initAll 自动挂载（读取 maxlength 限制输入并计数）",
+      "error": "校验失败加 .textarea--error（红色边框）"
     }
   },
   "usageHints": [
@@ -89,26 +115,33 @@
     "focus 时边框变品牌色 + 外发光",
     "placeholder 用 #C9CDD4(gray-4)，不用 text-2",
     "验证码按钮点击后启动 60s 倒计时",
-    "区号前缀使用灰底(#F7F8FA)区分"
+    "区号前缀使用灰底(#F7F8FA)区分",
+    "文本域(textarea)用于多行备注等录入：.textarea-field 包裹 .textarea + .textarea-counter，右下角字数计数器 N/max，随输入更新",
+    "文本域与 .input 同族样式（border-2 边框、4px 圆角、focus 品牌色 + 外发光），placeholder 用 gray-4"
   ],
   "doNotInvent": [
     "圆角大于 4px 的输入框",
     "彩色边框输入框(focus 除外)",
     "填充色/深色背景输入框",
-    "多行 textarea(当前设计系统无此组件)"
+    "可拖拽缩放的 textarea（resize 固定 none）",
+    "无字数计数器却设了 maxlength 的文本域（有上限就显示 N/max）"
   ],
   "usageScenarios": [
     { "scenario": "手机号/验证码登录", "variant": "验证码-可点击 / 验证码-倒计时", "when": "登录页录入手机号并获取验证码，点击后进入 60s 倒计时" },
     { "scenario": "区号前缀输入", "variant": "区号-empty", "when": "需要区号前缀的手机号输入，前缀用灰底区分" },
-    { "scenario": "基础文本录入", "variant": "基础-empty / 基础-filled", "when": "注册/登录页普通文本字段" }
+    { "scenario": "基础文本录入", "variant": "基础-empty / 基础-filled", "when": "注册/登录页普通文本字段" },
+    { "scenario": "多行备注录入", "variant": "文本域-empty / 文本域-filled", "when": "备注、异常说明等多行文本录入，右下角字数计数器 N/max（如 0/50）" }
   ],
   "states": [
     { "state": "empty", "trigger": "默认未输入", "class": "input（placeholder #C9CDD4）" },
     { "state": "focus", "trigger": "聚焦", "class": "input（:focus 边框 vi-2 + 外发光 rgba(0,170,166,0.1)）" },
     { "state": "error", "trigger": "校验失败", "class": "input--error（配合 .input-error-msg）" },
     { "state": "disabled", "trigger": "禁用", "class": "input--disabled" },
-    { "state": "countdown", "trigger": "验证码倒计时中", "class": "input-group__suffix--disabled（cursor not-allowed，文字 #7C8492）" }
+    { "state": "countdown", "trigger": "验证码倒计时中", "class": "input-group__suffix--disabled（cursor not-allowed，文字 #7C8492）" },
+    { "state": "textarea-empty", "trigger": "文本域未输入", "class": "textarea（placeholder gray-4，计数器 0/max）" },
+    { "state": "textarea-focus", "trigger": "文本域聚焦", "class": "textarea（:focus 边框 vi-2 + 外发光）" },
+    { "state": "textarea-error", "trigger": "文本域校验失败", "class": "textarea--error（红色边框）" }
   ],
-  "cssClasses": ["input", "input--error", "input--disabled", "input-error-msg", "input-group", "input-group__prefix", "input-group__suffix", "input-group__suffix--disabled"],
+  "cssClasses": ["input", "input--error", "input--disabled", "input-error-msg", "input-group", "input-group__prefix", "input-group__suffix", "input-group__suffix--disabled", "textarea-field", "textarea", "textarea--error", "textarea-counter"],
   "exampleRefs": ["examples/login.html", "preview/component-input.html"]
 }

@@ -101,7 +101,7 @@ description: "信小递司机端设计系统（海信物流司机端微信小程
 **用自检脚本执行**（零依赖 Node，位于本 skill 内）：
 
 ```bash
-node skills/xinxiaodi-design/scripts/verify-prototype.mjs <原型HTML的绝对路径>
+node .kiro/skills/xinxiaodi-design/scripts/verify-prototype.mjs <原型HTML的绝对路径>
 ```
 
 脚本默认 `--ds references`（本 skill 内的设计系统目录）。有任一 ERROR → 退出码 1，必须返工；WARN 需人工确认。

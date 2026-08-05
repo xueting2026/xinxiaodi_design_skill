@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 过磅列表页（含过磅登记弹窗）</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
+.page-sticky { position: sticky; top: 0; z-index: 50; }
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏「过磅」 -->
+<div class="demo-topbar page-sticky">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_black.svg" height="12" alt="status" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="location.href='demo-trailer.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="titlebar__title">过磅</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp" />
+    </span>
+  </div>
+</div>
+
+<!-- 定位栏 -->
+<div class="location-bar">
+  <img src="../assets/icons/position_green_16px.svg" class="location-bar__icon" width="16" height="16" />
+  <span class="location-bar__address" style="flex:1;">山东省青岛市市南区江西路11号山东省青岛市市南区</span>
+</div>
+
+<!-- 搜索框 -->
+<div style="padding: 8px 16px;">
+  <div class="searchbox">
+    <svg class="searchbox__icon" viewBox="0 0 24 24" fill="none" stroke="#BFC5CC" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input class="searchbox__input" placeholder="请输入柜号/运单号" />
+    <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
+  </div>
+</div>
+
+<!-- 过磅卡片列表（拖车业务卡片·过磅版，无场站头） -->
+<div class="card-list">
+
+  <div class="card card--trailer">
+    <div class="card__dispatch">
+      <div class="card__dispatch-row">
+        <span class="card__dispatch-plate">D22110100291</span>
+        <span class="card__dispatch-time">下达时间：2022/11/16 18:00</span>
+      </div>
+    </div>
+    <div class="card__waybill">
+      <div class="card__order">
+        <div class="card__order-top">
+          <span class="card__waybill-label">运单号</span>
+          <span class="card__order-sap">HECPX1233313131313545</span>
+        </div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card__waybill-actions">
+        <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#weigh-dialog')">过磅登记</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card--trailer">
+    <div class="card__dispatch">
+      <div class="card__dispatch-row">
+        <span class="card__dispatch-plate">D22110100292</span>
+        <span class="card__dispatch-time">下达时间：2022/11/16 19:30</span>
+      </div>
+    </div>
+    <div class="card__waybill">
+      <div class="card__order">
+        <div class="card__order-top">
+          <span class="card__waybill-label">运单号</span>
+          <span class="card__order-sap">HECPX9988776655443322</span>
+        </div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁UN521E</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010167890123</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">20GP</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">是</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">TCLU7654321</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card__waybill-actions">
+        <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#weigh-dialog')">过磅登记</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 过磅登记弹窗（复用 dialog 组件） -->
+<div class="dialog-overlay" id="weigh-dialog">
+  <div class="dialog">
+    <div class="dialog__close" onclick="XUI.closeDialog('#weigh-dialog')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#86909C" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="dialog__title">过磅登记</div>
+    <div class="dialog__field" style="margin-top: 8px; margin-bottom: 24px;">
+      <div class="dialog__field-label">过磅重量</div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <input class="input" type="number" value="30" style="flex: 1; height: 40px;" />
+        <span style="font-size: 14px; color: var(--text-3); flex-shrink: 0;">KG</span>
+      </div>
+    </div>
+    <div class="dialog__buttons">
+      <button class="btn btn--lg btn--primary" style="width: auto;" onclick="XUI.closeDialog('#weigh-dialog')">提交</button>
+    </div>
+  </div>
+</div>
+
+<script src="../ui.js"></script>
+</body>
+</html>

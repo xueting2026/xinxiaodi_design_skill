@@ -13,15 +13,15 @@
       "slug": "input",
       "name": "输入框 Input",
       "confidence": "high",
-      "variantCount": 5,
-      "description": "注册页输入框(48px)，含前缀/后缀/验证码变体"
+      "variantCount": 6,
+      "description": "注册页输入框(48px)，含前缀/后缀/验证码/文本域(带字数计数器)变体"
     },
     {
       "slug": "searchbox",
       "name": "搜索框 Search Box",
       "confidence": "high",
-      "variantCount": 3,
-      "description": "36px 高搜索框，含默认/有筛选/多项筛选三种类型"
+      "variantCount": 4,
+      "description": "36px 高搜索框，含默认/有筛选/多项筛选/拍照获取四种类型"
     },
     {
       "slug": "selector",
@@ -92,6 +92,27 @@
       "confidence": "high",
       "variantCount": 2,
       "description": "卡片底部操作区，含有统计/无统计两种规则"
+    },
+    {
+      "slug": "menu-item",
+      "name": "菜单列表项 Menu Item",
+      "confidence": "high",
+      "variantCount": 1,
+      "description": "通用导航页（Hub）纵向列表入口行：左侧24px图标+文字，右侧16px右箭头，白底圆角卡片行"
+    },
+    {
+      "slug": "uploader",
+      "name": "图片上传 Image Upload",
+      "confidence": "high",
+      "variantCount": 3,
+      "description": "拍照/上传图片组件，72×72 添加按钮 + 缩略图（含删除），每区最多9张，含默认/已上传/已满状态"
+    },
+    {
+      "slug": "sheet",
+      "name": "弹出面板 Sheet",
+      "confidence": "high",
+      "variantCount": 3,
+      "description": "表单级底部上滑面板（头部 取消/标题/确认，最高536px超出滚动）：动作面板(列表选择)/选择器(单列滚轮)/时间选择(多列滚轮)"
     }
   ]
 }

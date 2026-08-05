@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 提重柜列表</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
+.page-sticky { position: sticky; top: 0; z-index: 50; }
+/* 标准页宽下将贴底遮罩限制在页面内 */
+.sheet-overlay { position: fixed; left: 50%; right: auto; width: 375px; transform: translateX(-50%); }
+/* 装货进度筛选条 */
+.filter-bar { display: flex; align-items: center; gap: 8px; padding: 0 16px 8px; }
+.filter-chip { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 12px; border: 1px solid #E5E6EB; border-radius: 15px; background: #FFFFFF; font-size: 13px; color: #4E5969; cursor: pointer; }
+.filter-chip--active { border-color: #00AAA6; color: #00AAA6; background: #E6F7F6; }
+.filter-chip svg { transition: transform 0.2s; }
+</style>
+</head>
+<body>
+
+<div class="demo-topbar page-sticky">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons"><img src="../assets/icons/bar_status_black.svg" height="12" alt="status" /></div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="location.href='demo-trailer.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="titlebar__title">提重柜</span>
+    <span class="titlebar__right titlebar__capsule"><img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp" /></span>
+  </div>
+</div>
+
+<div class="location-bar">
+  <img src="../assets/icons/position_green_16px.svg" class="location-bar__icon" width="16" height="16" />
+  <span class="location-bar__address" style="flex:1;">山东省青岛市市南区江西路11号山东省青岛市市南区</span>
+</div>
+
+<div style="padding: 8px 16px;">
+  <div class="searchbox">
+    <div class="searchbox__filter">
+      <div class="searchbox__filter-trigger">
+        <span class="searchbox__filter-label">装货点</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="searchbox__filter-divider"></div>
+      <div class="searchbox__filter-menu">
+        <div class="searchbox__filter-item">装货点</div>
+        <div class="searchbox__filter-item">调度单号</div>
+        <div class="searchbox__filter-item">运单号</div>
+        <div class="searchbox__filter-item">订舱号</div>
+      </div>
+    </div>
+    <input class="searchbox__input" placeholder="请输入查询内容" />
+    <div class="searchbox__clear"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1L7 7M7 1L1 7" stroke="#FFF" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+    <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
+  </div>
+</div>
+
+<!-- 装货进度筛选 -->
+<div class="filter-bar">
+  <div class="filter-chip" id="progress-chip" onclick="XUI.openSheet('#sheet-progress')">
+    <span id="progress-label">装货进度：全部</span>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+  </div>
+</div>
+
+<!-- 提重柜卡片列表（多选 + 调度单分组提重柜登记） -->
+<div class="card-list">
+  <div class="card card--trailer">
+    <div class="card__location">
+      <div class="card__location-row">
+        <span class="tag tag--orange">装货点</span>
+        <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+      </div>
+      <div class="card__warehouse">【H1532】青岛平度仓</div>
+    </div>
+    <div class="card__divider card__divider--full"></div>
+    <div class="card__dispatch">
+      <div class="card__dispatch-row">
+        <span style="display:inline-flex; align-items:center; gap:8px;">
+          <span class="checkbox grp-cb" onclick="toggleGroup(event,this)"></span>
+          <span class="card__dispatch-plate">D22110100291</span>
+        </span>
+        <span class="card__dispatch-time">下达时间：2022/11/16 18:00</span>
+      </div>
+    </div>
+
+    <div class="card__waybill" data-progress="装柜完成">
+      <div class="card__order">
+        <div class="card__order-top">
+          <span class="checkbox wb-cb" onclick="toggleCb(event,this)"></span>
+          <span class="card__waybill-label">运单号</span>
+          <span class="card__order-sap">HECPX1233313131313545</span>
+        </div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">装货进度</span><span class="card__grid-value">装柜完成</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">月台信息</span><span class="card__grid-value">A区3号月台</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card__waybill" data-progress="开始装柜">
+      <div class="card__order">
+        <div class="card__order-top">
+          <span class="checkbox wb-cb" onclick="toggleCb(event,this)"></span>
+          <span class="card__waybill-label">运单号</span>
+          <span class="card__order-sap">HECPX9988776655443322</span>
+        </div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁UN521E</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010167890123</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">20GP</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">装货进度</span><span class="card__grid-value">开始装柜</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">2</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">是</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">TCLU7654321</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">月台信息</span><span class="card__grid-value">B区1号月台</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card__footer">
+      <button class="btn btn--sm btn--primary" onclick="register(this,'提重柜登记')">提重柜登记</button>
+    </div>
+  </div>
+</div>
+
+<!-- 装货进度筛选面板 -->
+<div class="sheet-overlay" id="sheet-progress">
+  <div class="sheet">
+    <div class="sheet__header">
+      <span class="sheet__cancel" onclick="XUI.closeSheet('#sheet-progress')">取消</span>
+      <span class="sheet__title">装货进度</span>
+      <span class="sheet__confirm" onclick="applyProgress()">确认</span>
+    </div>
+    <div class="sheet__body">
+      <div class="sheet__option sheet__option--selected" data-value="全部" onclick="pickProgress(this)">全部</div>
+      <div class="sheet__option" data-value="开始拣货" onclick="pickProgress(this)">开始拣货</div>
+      <div class="sheet__option" data-value="开始装柜" onclick="pickProgress(this)">开始装柜</div>
+      <div class="sheet__option" data-value="装柜完成" onclick="pickProgress(this)">装柜完成</div>
+    </div>
+  </div>
+</div>
+
+<script src="../ui.js"></script>
+<script>
+function setCb(el, on) {
+  el.classList.toggle('checkbox--checked', on);
+  el.innerHTML = on ? '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+}
+function toggleCb(e, el) {
+  e.stopImmediatePropagation();
+  setCb(el, !el.classList.contains('checkbox--checked'));
+}
+function toggleGroup(e, el) {
+  e.stopImmediatePropagation();
+  var on = !el.classList.contains('checkbox--checked');
+  setCb(el, on);
+  el.closest('.card').querySelectorAll('.card__waybill:not([hidden]) .wb-cb').forEach(function (cb) { setCb(cb, on); });
+}
+function register(btn, label) {
+  var card = btn.closest('.card');
+  var n = card.querySelectorAll('.wb-cb.checkbox--checked').length;
+  if (n === 0) { XUI.toast('请选择需要提重柜的运单'); return; }
+  XUI.toast(label + '成功');
+  card.querySelectorAll('.checkbox--checked').forEach(function (cb) { setCb(cb, false); });
+}
+
+// 装货进度筛选
+var pendingProgress = '全部';
+function pickProgress(el) {
+  el.parentNode.querySelectorAll('.sheet__option').forEach(function (o) { o.classList.remove('sheet__option--selected'); });
+  el.classList.add('sheet__option--selected');
+  pendingProgress = el.dataset.value;
+}
+function applyProgress() {
+  var chip = document.getElementById('progress-chip');
+  document.getElementById('progress-label').textContent = '装货进度：' + pendingProgress;
+  chip.classList.toggle('filter-chip--active', pendingProgress !== '全部');
+  document.querySelectorAll('.card__waybill').forEach(function (wb) {
+    var show = (pendingProgress === '全部') || (wb.dataset.progress === pendingProgress);
+    wb.hidden = !show;
+    if (!show) { var cb = wb.querySelector('.wb-cb'); if (cb) setCb(cb, false); }
+  });
+  XUI.closeSheet('#sheet-progress');
+}
+</script>
+</body>
+</html>

@@ -38,6 +38,10 @@
   .preview-title::before { content: ''; width: 4px; height: 18px; background: #00AAA6; border-radius: 2px; }
   .preview-desc { font-size: 12px; color: #7C8492; margin-bottom: 20px; }
   .preview-group { margin-bottom: 24px; }
+  /* 拖车业务 8 个列表页：与其他卡片一致的单列布局，卡片纵向堆叠 */
+  .trailer-grid { display: flex; flex-direction: column; gap: 20px; }
+  .trailer-cell { width: 343px; }
+  .trailer-cell__title { font-size: 13px; font-weight: 600; color: #1D2129; margin-bottom: 8px; }
   .preview-group-title { font-size: 14px; font-weight: 500; color: #1D2129; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #E5E6EB; }
   .preview-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 12px; }
   .preview-label { font-size: 11px; color: #7C8492; margin-top: 6px; }
@@ -68,6 +72,7 @@
   </a>
   <div class="sidebar__title">卡片 Card</div>
   <a class="sidebar__link" href="#sec-full">运单卡片(完整)</a>
+  <a class="sidebar__link" href="#sec-trailer">拖车业务卡片</a>
   <a class="sidebar__link" href="#sec-logistics">物流信息卡片</a>
   <a class="sidebar__link" href="#sec-sign">签收管理卡片</a>
   <a class="sidebar__link" href="#sec-checkbox">Checkbox 模式</a>
@@ -393,6 +398,351 @@
         </div>
       </div>
       <div class="preview-label">点击「展开」查看订单详情 | 勾选选项面板切换多选模式/标签/时间气泡</div>
+    </div>
+  </section>
+
+  <!-- 拖车业务卡片 -->
+  <section class="preview-section preview-section--wide" id="sec-trailer">
+    <div class="preview-title">拖车业务卡片</div>
+    <div class="preview-desc">Figma node: 7532:86792 · 三层结构同运单卡片，复用 .card__* 原子类。场站(地点头) → 调度单(调度单号+下达时间) → 运单小卡片(运单号 + 运单信息字段网格 + 操作按钮)。用于拖车业务 8 个列表页，标签与按钮随页面切换。</div>
+
+    <div>
+      <!-- 结构说明 -->
+      <div class="preview-group">
+        <div class="preview-group-title">三层结构 · 字段清单</div>
+        <div style="font-size: 11px; color: #1D2129; background: #F7F8FA; padding: 14px 16px; border-radius: 6px; line-height: 2.2; font-family: 'SF Mono', 'PingFang SC', monospace; overflow-x: auto; white-space: pre-line;">┌─────────────────────────────────────────┐
+│ <span style="color: #FF7D00; font-weight: 600;">① 场站信息（地点头）</span>                    │
+│   ○ 场景标签（提柜点/装货点/返柜点，橙色）  │
+│   ★ 地址（标签右侧，最多 2 行省略）         │
+│   ○ 【编码】+ 名称（如【A001】xx场站）      │
+├─────────────────────────────────────────┤
+│ <span style="color: #00AAA6; font-weight: 600;">② 调度单信息</span> <span style="color:#7C8492;">(可多组, 1:N)</span>              │
+│   ★ 调度单号（如 D22110100291）             │
+│   ○ 下达时间（右对齐）                      │
+│ ┌─────────────────────────────────────┐ │
+│ │ <span style="color: #00AAA6; font-weight: 600;">③ 运单小卡片</span> <span style="color:#7C8492;">(每个调度单下可多个)</span>    │ │
+│ │   ★ 运单号（绿底头，如 HECPX…）         │ │
+│ │   短字段(2列各50%)：超出 50% 省略(...)  │ │
+│ │   长字段(1列100%)：完整显示             │ │
+│ │   ★ 操作按钮（如提柜，右对齐）          │ │
+│ └─────────────────────────────────────┘ │
+└─────────────────────────────────────────┘</div>
+      </div>
+      <!-- 长短字段规则 -->
+      <div class="preview-group">
+        <div class="preview-group-title">字段占位宽度规则</div>
+        <div style="font-size:12px; color:#1D2129; background:#F7F8FA; padding:14px 16px; border-radius:6px; line-height:1.9;">
+          <div><b style="color:#FF7D00;">长字段（100%，独占一行，完整显示）</b></div>
+          <div style="color:#4E5969;">要求装货时间 · 首个装货点 · 柜号 · 预约入园时间 · 月台信息</div>
+          <div style="margin-top:8px;"><b style="color:#00AAA6;">短字段（50%，一排 2 个，超出省略 …）</b></div>
+          <div style="color:#4E5969;">提单号 · 车牌号 · 订舱号 · 柜子类型 · 是否多地拼货 · 装货点顺序 · 装货进度 · 货品分类/件数/重量/体积</div>
+          <div style="margin-top:8px; color:#7C8492;">调度单号（D…）与运单号（HECPX…）是不同层级的不同数据。新增字段时需先确认长/短再定占位宽度。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 个列表页 · 实际效果 -->
+    <div class="preview-group" style="margin-top:16px;">
+      <div class="preview-group-title">8 个列表页 · 实际效果（复用 .card__* 原子类）</div>
+      <div class="preview-label" style="margin-top:0; margin-bottom:12px;">提柜 / 入园 / 落柜 / 提重柜 / 离园 / 过磅 / 返重柜 / 改约。每个列表页 = 状态栏+标题栏 + 定位栏 + 有筛选的搜索框 + 拖车业务卡片列表。①提柜示范一个大卡片挂载多个运单小卡片；⑥过磅无场站头。</div>
+      <div class="trailer-grid">
+
+        <!-- ① 提柜（含 2 个运单小卡片，演示一卡多运单） -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">① 提柜 · 按钮「提柜」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">提柜点</span>
+                <span class="card__addr card__addr--wrap">江苏省淮安市淮阴区新渡口街道人民路新渡口街道人民路新渡口街道人民路166号</span>
+              </div>
+              <div class="card__warehouse">【A001】xxx场站</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row">
+                <span class="card__dispatch-plate">D22110100291</span>
+                <span class="card__dispatch-time">下达时间：2022/11/16 18:00</span>
+              </div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">提单号</span><span class="card__grid-value">THTM001</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">20GP</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">是</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-01 09:00:00</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">首个装货点</span><span class="card__grid-value">xxxxxxxxxxxxxxx场站</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">提柜</button></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX9988776655443322</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">提单号</span><span class="card__grid-value">THTM002</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁UN521E</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-02 14:00:00</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">首个装货点</span><span class="card__grid-value">扬州冰箱CDC厂区场站</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">提柜</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ② 入园 -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">② 入园 · 按钮「入园登记」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">装货点</span>
+                <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+              </div>
+              <div class="card__warehouse">【H1532】青岛平度仓</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">预约入园时间</span><span class="card__grid-value">2026-01-01 10:30:00</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-01 09:00:00</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">入园登记</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ③ 落柜 -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">③ 落柜 · 按钮「落柜登记」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">装货点</span>
+                <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+              </div>
+              <div class="card__warehouse">【H1532】青岛平度仓</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-01 09:00:00</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">月台信息</span><span class="card__grid-value">A区3号月台</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">落柜登记</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ④ 提重柜 -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">④ 提重柜 · 按钮「提重柜登记」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">装货点</span>
+                <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+              </div>
+              <div class="card__warehouse">【H1532】青岛平度仓</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-01 09:00:00</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">月台信息</span><span class="card__grid-value">A区3号月台</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">提重柜登记</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑤ 离园 -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">⑤ 离园 · 按钮「离园登记」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">装货点</span>
+                <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+              </div>
+              <div class="card__warehouse">【H1532】青岛平度仓</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">装货进度</span><span class="card__grid-value">开始拣货</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">月台信息</span><span class="card__grid-value">A区3号月台</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">离园登记</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑥ 过磅（无场站头） -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">⑥ 过磅 · 按钮「过磅登记」<span style="font-weight:400;color:#7C8492;font-size:11px;">（无场站头）</span></div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">过磅登记</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑦ 返重柜 -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">⑦ 返重柜 · 按钮「返重柜」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">返柜点</span>
+                <span class="card__addr card__addr--wrap">江苏省淮安市淮阴区新渡口街道人民路新渡口街道人民路新渡口街道人民路166号</span>
+              </div>
+              <div class="card__warehouse">【A001】xxx场站</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">提单号</span><span class="card__grid-value">THTM001</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">货品分类</span><span class="card__grid-value">冰箱</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">货品件数</span><span class="card__grid-value">88</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">货品重量</span><span class="card__grid-value">1200kg</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">货品体积</span><span class="card__grid-value">13.5m³</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">返重柜</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑧ 改约 -->
+        <div class="trailer-cell">
+          <div class="trailer-cell__title">⑧ 改约 · 按钮「改约」</div>
+          <div class="card card--trailer" style="width:100%;">
+            <div class="card__location">
+              <div class="card__location-row">
+                <span class="tag tag--orange">装货点</span>
+                <span class="card__addr card__addr--wrap">山东省青岛市平度市南村镇工业园区青岛平度仓南村镇工业园区88号</span>
+              </div>
+              <div class="card__warehouse">【H1532】青岛平度仓</div>
+            </div>
+            <div class="card__divider card__divider--full"></div>
+            <div class="card__dispatch">
+              <div class="card__dispatch-row"><span class="card__dispatch-plate">D22110100291</span><span class="card__dispatch-time">下达时间：2022/11/16 18:00</span></div>
+            </div>
+            <div class="card__waybill">
+              <div class="card__order">
+                <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+                <div class="card__order-body">
+                  <div class="card__grid">
+                    <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">是否多地拼货</span><span class="card__grid-value">否</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">预约入园时间</span><span class="card__grid-value">2026-01-01 10:30:00</span></div>
+                    <div class="card__grid-item"><span class="card__grid-label">装货点顺序</span><span class="card__grid-value">1</span></div>
+                    <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">要求装货时间</span><span class="card__grid-value">2026-01-01 09:00:00</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card__waybill-actions"><button class="btn btn--sm btn--primary">改约</button></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 

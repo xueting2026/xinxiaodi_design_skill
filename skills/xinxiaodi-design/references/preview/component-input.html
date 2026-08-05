@@ -73,6 +73,7 @@
   <a class="sidebar__link" href="#sec-prefix">区号前缀</a>
   <a class="sidebar__link" href="#sec-code">验证码输入</a>
   <a class="sidebar__link" href="#sec-password">密码输入</a>
+  <a class="sidebar__link" href="#sec-textarea">文本域</a>
   <a class="sidebar__link" href="#sec-error">错误态</a>
   <a class="sidebar__link" href="#sec-spec">规格汇总</a>
 </nav>
@@ -199,6 +200,32 @@
     </div>
   </section>
 
+  <!-- 文本域 -->
+  <section class="preview-section" id="sec-textarea">
+    <div class="preview-title">文本域 Textarea</div>
+    <div class="preview-desc">Figma 3137:57085 · 多行输入，与 .input 同族（border 1px、4px 圆角、focus 品牌色+外发光），右下角字数计数器 N/max，随输入实时更新。</div>
+    <div class="preview-group">
+      <div class="preview-group-title">未输入 (placeholder + 计数器)</div>
+      <div class="demo-col">
+        <div class="textarea-field">
+          <textarea class="textarea" maxlength="50" placeholder="请输入备注"></textarea>
+          <span class="textarea-counter">0/50</span>
+        </div>
+      </div>
+      <div class="preview-label">在上方输入体验：计数器随字数更新，达到 50 字停止输入</div>
+    </div>
+    <div class="preview-group">
+      <div class="preview-group-title">已输入</div>
+      <div class="demo-col">
+        <div class="textarea-field">
+          <textarea class="textarea" maxlength="50">柜门有轻微凹陷，已拍照留存，请知悉。</textarea>
+          <span class="textarea-counter">0/50</span>
+        </div>
+      </div>
+      <div class="preview-label">.textarea-field 包裹 .textarea + .textarea-counter；XUI.initTextarea 自动挂载计数</div>
+    </div>
+  </section>
+
   <!-- 错误态 -->
   <section class="preview-section" id="sec-error">
     <div class="preview-title">错误态</div>
@@ -242,7 +269,12 @@
       Disabled: bg #F3F5F7, color #7C8492, cursor not-allowed<br>
       Placeholder: color #C9CDD4<br><br>
       <strong>验证码倒计时</strong><br>
-      默认 60s | 倒计时文字色 #7C8492 | 激活色 #00AAA6
+      默认 60s | 倒计时文字色 #7C8492 | 激活色 #00AAA6<br><br>
+      <strong>文本域 .textarea</strong><br>
+      min-height 72px | 圆角 4px | 边框 1px | padding 8px 12px 22px<br>
+      字号 14px | placeholder #C9CDD4 | resize: none<br>
+      Focus: border #00AAA6 + shadow rgba(0,170,166,0.1)<br>
+      计数器 .textarea-counter: 右下角 12px #C9CDD4, N/max 随输入更新
     </div>
   </section>
 </div>

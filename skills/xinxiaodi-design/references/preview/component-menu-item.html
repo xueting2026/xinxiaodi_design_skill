@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信小递组件 - 菜单列表项 Menu Item</title>
+<link rel="stylesheet" href="../ui.css">
+<script>
+/* 嵌入模式：被 index.html 以 iframe 引用(?embed=1)时隐藏侧边栏并自适应高度，保证组件只维护一份 */
+(function () {
+  if (new URLSearchParams(location.search).get('embed') !== '1') return;
+  var s = document.createElement('style');
+  s.textContent = '.sidebar{display:none!important}.preview-page{padding-left:24px!important;max-width:none!important}body{background:#fff!important}';
+  (document.head || document.documentElement).appendChild(s);
+  function measure() { return Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0, document.body ? document.body.offsetHeight : 0); }
+  function post() { parent.postMessage({ type: 'previewHeight', height: measure() }, '*'); }
+  function start() {
+    post();
+    if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+    [100, 300, 600, 1200].forEach(function (t) { setTimeout(post, t); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+    Array.prototype.forEach.call(document.images, function (img) { if (!img.complete) img.addEventListener('load', post); });
+  }
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+  window.addEventListener('resize', post);
+  window.addEventListener('wheel', function (e) {
+    parent.postMessage({ type: 'previewWheel', deltaY: e.deltaY, deltaX: e.deltaX }, '*');
+  }, { passive: true });
+})();
+</script>
+<style>
+  body { background: #F3F5F7; margin: 0; }
+  .preview-page { max-width: 555px; margin: 0 auto; padding: 24px 16px; padding-left: 140px; }
+  .preview-section { background: #FFFFFF; border-radius: 10px; padding: 24px; margin-bottom: 16px; max-width: 415px; }
+  .preview-title { font-size: 18px; font-weight: 600; color: #1D2129; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .preview-title::before { content: ''; width: 4px; height: 18px; background: #00AAA6; border-radius: 2px; }
+  .preview-desc { font-size: 12px; color: #7C8492; margin-bottom: 20px; }
+  .preview-group { margin-bottom: 24px; }
+  .preview-group-title { font-size: 14px; font-weight: 500; color: #1D2129; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #E5E6EB; }
+  .preview-label { font-size: 11px; color: #7C8492; margin-top: 6px; }
+  .preview-spec { font-size: 11px; color: #86909C; background: #F7F8FA; padding: 8px 12px; border-radius: 6px; line-height: 1.8; margin-top: 8px; }
+  .sidebar { position: fixed; left: 0; top: 0; width: 130px; height: 100vh; background: #FFFFFF; border-right: 1px solid #E5E6EB; padding: 16px 0; overflow-y: auto; z-index: 50; }
+  .sidebar__back { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #00AAA6; padding: 6px 16px; margin-bottom: 8px; text-decoration: none; border-bottom: 1px solid #E5E6EB; padding-bottom: 12px; }
+  .sidebar__back:hover { opacity: 0.7; }
+  .sidebar__title { font-size: 12px; font-weight: 600; color: #1D2129; padding: 8px 16px; }
+  .sidebar__link { display: block; font-size: 11px; color: #7C8492; padding: 6px 16px; text-decoration: none; transition: all 0.15s; }
+  .sidebar__link:hover { color: #00AAA6; background: #E6F7F6; }
+  /* 菜单列表置于灰底（Hub 页面背景 bg-1） */
+  .menu-demo-wrap { background: #F2F3F5; border-radius: 8px; padding-bottom: 16px; }
+  .usage-note { background: #F0FBFA; border: 1px solid #B7EDE9; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1D2129; line-height: 1.7; }
+  .usage-note b { color: #009093; }
+  .usage-bad { background: #FFECE8; border: 1px solid #FBACA3; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1D2129; line-height: 1.7; margin-top: 10px; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <a class="sidebar__back" href="../index.html">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8L10 12" stroke="#00AAA6" stroke-width="1.5" stroke-linecap="round"/></svg>
+    返回目录
+  </a>
+  <div class="sidebar__title">菜单列表项 Menu Item</div>
+  <a class="sidebar__link" href="#sec-standard">标准列表项</a>
+  <a class="sidebar__link" href="#sec-usage">使用约束</a>
+  <a class="sidebar__link" href="#sec-spec">规格说明</a>
+</nav>
+
+<div class="preview-page">
+  <!-- 标准列表项 -->
+  <section class="preview-section" id="sec-standard">
+    <div class="preview-title">标准列表项</div>
+    <div class="preview-desc">Figma 7559:42913 / 7559:42918 · 通用导航页（功能选择页 Hub）的纵向入口行：左侧「24px 图标 + 文字」，右侧「16px 右箭头」，白底圆角卡片行。图标与文字随业务场景变化，结构固定。</div>
+    <div class="preview-group">
+      <div class="menu-demo-wrap">
+        <div class="menu-list">
+          <div class="menu-item">
+            <div class="menu-item__left">
+              <img class="menu-item__icon" src="../assets/icons/tuoche/fankonggui.svg" alt="返空柜">
+              <span class="menu-item__label">返空柜</span>
+            </div>
+            <img class="menu-item__arrow" src="../assets/icons/select/right_line_black_16px.svg" alt="">
+          </div>
+          <div class="menu-item">
+            <div class="menu-item__left">
+              <img class="menu-item__icon" src="../assets/icons/tuoche/yichang.svg" alt="其他异常">
+              <span class="menu-item__label">其他异常</span>
+            </div>
+            <img class="menu-item__arrow" src="../assets/icons/select/right_line_black_16px.svg" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="preview-label">列表容器 .menu-list（gap 12px），行 .menu-item（白底 10px 圆角，padding 16px → 行高 56px）；点击整行跳转对应功能页</div>
+    </div>
+  </section>
+
+  <!-- 使用约束 -->
+  <section class="preview-section" id="sec-usage">
+    <div class="preview-title">使用约束</div>
+    <div class="preview-desc">该组件的适用范围有严格限制。</div>
+    <div class="preview-group">
+      <div class="usage-note">
+        <b>仅用于「通用导航页（功能选择页 Hub）」里的列表项。</b><br>
+        当某业务的子功能 ≥ 3 个、需要一个二级入口集合页时，用 .menu-list + .menu-item 纵向罗列各入口（如异常提报页的「返空柜 / 其他异常」）。
+      </div>
+      <div class="usage-bad">
+        <b>不要用于以下场景：</b>卡片内部行、Tab 内容区、表单字段行、列表页的运单/业务卡片、设置项开关行等。这些场景应使用对应的卡片、表单、选择器等组件，不得借用 menu-item。
+      </div>
+    </div>
+  </section>
+
+  <!-- 规格说明 -->
+  <section class="preview-section" id="sec-spec">
+    <div class="preview-title">菜单列表项规格说明</div>
+    <div class="preview-desc">组件参数一览</div>
+    <div class="preview-spec">
+      <strong>列表容器 .menu-list</strong><br>
+      display: flex column | gap: 12px（--space-3）| padding: 16px 16px 0<br><br>
+      <strong>行 .menu-item</strong><br>
+      背景: #FFFFFF | 圆角: 10px（--radius-card）| padding: 16px<br>
+      行高: 56px（16×2 + 图标 24）| flex space-between, align-items center<br>
+      点击整行跳转对应功能页<br><br>
+      <strong>左侧 .menu-item__left</strong><br>
+      flex | gap: 12px（图标 + 文字）<br><br>
+      <strong>图标 .menu-item__icon</strong><br>
+      24×24px | 来自 assets/icons/tuoche/ 等业务图标<br><br>
+      <strong>文字 .menu-item__label</strong><br>
+      14px Semibold（font-weight 600）| color-text-1 #1D2129<br><br>
+      <strong>右箭头 .menu-item__arrow</strong><br>
+      16×16px | 固定 assets/icons/select/right_line_black_16px.svg<br><br>
+      <strong>不要</strong>：改图标尺寸、改行高、行内加分割线、自造箭头、用于 Hub 页以外的场景
+    </div>
+  </section>
+</div>
+
+<script src="../ui.js"></script>
+</body>
+</html>

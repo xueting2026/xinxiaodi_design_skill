@@ -1,0 +1,107 @@
+{
+  "slug": "menu-item",
+  "name": "菜单列表项 Menu Item",
+  "schemaVersion": 1,
+  "figmaNode": "7559:42913 (返空柜行), 7559:42918 (其他异常行)",
+  "description": "通用导航页（功能选择页 Hub）中的纵向列表入口行。每行由左侧「24px图标 + 文字」和右侧「16px右箭头」组成，点击进入对应功能页面。图标和文字随业务场景变化，结构固定。",
+  "onlyUsedIn": "【严格限制】仅用于通用导航页（功能选择页 Hub）里的列表项。不用于卡片内部行、Tab 内容区、表单字段行、列表页业务卡片、设置项开关行等；这些场景应使用对应的卡片/表单/选择器组件，不得借用 menu-item。",
+  "variantDimensions": [
+    {
+      "axis": "content",
+      "values": ["图标+文字+箭头（标准）"]
+    }
+  ],
+  "representativeVariants": [
+    "menu-item-standard"
+  ],
+  "anatomy": {
+    "parts": [
+      ".menu-list（列表容器，gap-12，padding 16px 16px 0）",
+      ".menu-item（行容器，白底 radius-card，padding 16px，flex space-between）",
+      ".menu-item__left（左侧区域，flex，gap-12）",
+      ".menu-item__icon（24×24 SVG 图标，flex-shrink:0）",
+      ".menu-item__label（文字标签，14px Semibold，color-text-1）",
+      ".menu-item__arrow（16×16 右箭头图标，flex-shrink:0）"
+    ],
+    "required": [".menu-item", ".menu-item__left", ".menu-item__icon", ".menu-item__label", ".menu-item__arrow"]
+  },
+  "specs": {
+    "menu-item": {
+      "height": "56px（padding 16px × 2 + 图标 24px）",
+      "backgroundColor": "var(--color-fill-white)",
+      "borderRadius": "var(--radius-card) = 10px",
+      "padding": "16px",
+      "display": "flex",
+      "justifyContent": "space-between",
+      "alignItems": "center"
+    },
+    "menu-item__icon": {
+      "size": "24×24px",
+      "source": "assets/icons/tuoche/*.svg 或 assets/shortcuts/icon/home/driver/*.svg"
+    },
+    "menu-item__label": {
+      "fontSize": "14px",
+      "fontWeight": "600（Semibold）",
+      "lineHeight": "20px",
+      "color": "var(--color-text-1) = #1D2129"
+    },
+    "menu-item__arrow": {
+      "size": "16×16px",
+      "source": "assets/icons/select/right_line_black_16px.svg"
+    },
+    "menu-list-gap": "12px（var(--space-3)）",
+    "menu-list-padding": "16px 16px 0"
+  },
+  "interaction": {
+    "tap": "点击整行跳转至对应功能页（列表页或操作页）"
+  },
+  "usageHints": [
+    "仅用于功能选择页（Hub）的纵向菜单列表，不用于卡片内部或 Tab 内容区",
+    "图标统一 24px，来自 assets/icons/tuoche/ 或 assets/shortcuts/icon/home/driver/",
+    "右箭头固定使用 select/right_line_black_16px.svg",
+    "标签文字 14px Semibold（font-weight:600），与卡片标题规格一致",
+    "列表容器 .menu-list 提供 12px 行间距，不需要在 .menu-item 上手动加 margin",
+    "如果列表下方还有内容，.menu-list 的 padding-bottom 按页面需要补充"
+  ],
+  "doNotInvent": [
+    "用于通用导航页（Hub）以外的场景（卡片行 / Tab 内容 / 表单行 / 设置开关行等）",
+    "自造箭头 SVG（固定用 right_line_black_16px.svg）",
+    "图标尺寸改为 20px 或 32px（统一 24px）",
+    "行高改为 48px 或 64px（通过 padding 16px 实现 56px 行高）",
+    "在行内加分割线（行间距由 .menu-list gap 控制，不需要分割线）",
+    "用内联 style 重写 .menu-item 的背景色或圆角"
+  ],
+  "usageScenarios": [
+    {
+      "scenario": "拖车业务-异常提报：返空柜入口",
+      "variant": "menu-item-standard",
+      "when": "功能选择页中列出「返空柜」子功能入口",
+      "icon": "assets/icons/tuoche/fankonggui.svg",
+      "label": "返空柜"
+    },
+    {
+      "scenario": "拖车业务-异常提报：变更柜号入口",
+      "variant": "menu-item-standard",
+      "when": "异常提报通用导航页中列出「变更柜号」子功能入口",
+      "icon": "assets/icons/tuoche/fankonggui.svg（暂与返空柜一致，待补正式『变更柜号』图标）",
+      "label": "变更柜号"
+    },
+    {
+      "scenario": "拖车业务-异常提报：其他异常入口",
+      "variant": "menu-item-standard",
+      "when": "异常提报通用导航页中列出「其他异常」子功能入口",
+      "icon": "assets/icons/tuoche/yichang.svg",
+      "label": "其他异常"
+    }
+  ],
+  "$exceptionReportHub": "异常提报通用导航页（examples/demo-exception-report.html）标题『异常提报』，列表项：返空柜 / 变更柜号 / 其他异常。",
+  "states": [
+    {
+      "state": "default",
+      "trigger": "常规显示",
+      "class": "menu-item"
+    }
+  ],
+  "cssClasses": ["menu-list", "menu-item", "menu-item__left", "menu-item__icon", "menu-item__label", "menu-item__arrow"],
+  "exampleRefs": ["preview/component-menu-item.html", "examples/demo-exception-report.html"]
+}

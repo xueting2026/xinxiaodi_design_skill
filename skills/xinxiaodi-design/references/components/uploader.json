@@ -1,0 +1,93 @@
+{
+  "slug": "uploader",
+  "name": "图片上传 Image Upload",
+  "schemaVersion": 1,
+  "figmaNode": "7799:43772",
+  "description": "拍照/上传图片组件。字段容器 .uploader-field：空态为『添加按钮 + 红字提示』并排；上传后红字消失、切换为有图态(.uploader-field--filled)，缩略图行单行不换行、超出一行时左右滚动。添加按钮与缩略图统一 72×72，每个上传区最多 9 张。用于签收签单、集装箱号照片等图片采集，置于灰底(bg-1)区域内（如签收卡片、拖车登记/详情表单）。",
+  "variantDimensions": [
+    {
+      "axis": "state",
+      "values": ["默认/空(empty)", "已上传(uploaded/filled)", "已满(full)"]
+    }
+  ],
+  "representativeVariants": ["empty", "uploaded", "full"],
+  "anatomy": {
+    "parts": [
+      "field(.uploader-field：字段容器；有图态加 .uploader-field--filled)",
+      "row(.uploader：添加按钮 + 缩略图，单行不换行；有图态横向滚动)",
+      "add-button(.uploader__cell.uploader__add：图标 + 文案)",
+      "thumbnail(.uploader__cell + .uploader__thumb-img + .uploader__del)",
+      "hint(.uploader__hint：必填/上限提示，仅空态显示)"
+    ],
+    "required": ["field", "row", "add-button"]
+  },
+  "specs": {
+    "field": {
+      "empty": ".uploader-field 为 flex 行：.uploader（添加按钮）+ .uploader__hint（红字提示 flex:1）并排",
+      "filled": ".uploader-field.uploader-field--filled：隐藏 .uploader__hint；.uploader 单行不换行 + overflow-x 横向滚动",
+      "context": "置于灰底 bg-1(#F2F3F5) 区域内"
+    },
+    "container": {
+      "display": "flex",
+      "flexWrap": "nowrap",
+      "gap": "8px",
+      "overflowX": "auto（仅有图态 .uploader-field--filled 下生效，超出一行左右滚动）"
+    },
+    "cell": { "width": "72px", "height": "72px", "note": "添加按钮与缩略图统一尺寸" },
+    "add-button": {
+      "background": "#FFFFFF",
+      "border": "1px dashed color-border（#C9CDD4 / 视觉近似 #BFC5CC）",
+      "radius": "4px",
+      "layout": "竖向居中：图标 + 文案，gap 4px",
+      "icon": { "size": "24px", "source": "assets/icons/pic_gray_24px.svg" },
+      "text": "10px Regular #86909C(text-2)：空态『拍照/上传』；有图后『还能传N张』(N=9-已传数)"
+    },
+    "thumbnail": {
+      "wrapper": "72×72(.uploader__cell)",
+      "image": "64×64，radius 4px，object-fit cover，顶部偏移 8px(.uploader__thumb-img)，为右上角删除按钮留位",
+      "delete": { "size": "20px", "position": "右上角", "icon": "assets/icons/pic_close.svg（深色半透明圆 + 白描边 + ×）" }
+    },
+    "hint": {
+      "fontSize": "12px",
+      "fontWeight": 500,
+      "color": "#EE0A24(danger-1)",
+      "note": "必填/上限说明，如『（必填）请上传【集装箱号照片】！，每个上传图片区域最多允许上传9张』；置于添加按钮右侧或上传区下方"
+    }
+  },
+  "interaction": {
+    "empty": "空态显示红字提示(.uploader__hint) + 添加按钮，文案『拍照/上传』",
+    "add": "点击添加按钮 → 唤起拍照/相册选择 → 上传后红字提示消失、字段加 .uploader-field--filled 切换有图态，并追加缩略图；到达 9 张上限后隐藏添加按钮",
+    "scroll": "缩略图超出一行时整行左右滑动查看（.uploader overflow-x）",
+    "remaining-count": "添加按钮文案随已传数量更新为『还能传N张』(N = 9 - 已传数)",
+    "delete": "点击缩略图右上角删除按钮 → 移除该图并回填剩余可传数量；删至 0 张恢复空态红字提示",
+    "required": "标记必填时未上传则拦截提交，并显示 danger 提示文案"
+  },
+  "usageHints": [
+    "空态：添加按钮 + 红字提示并排；上传后红字消失切换有图态；缩略图超出一行左右滚动",
+    "添加按钮与缩略图统一 72×72，单行不换行，间距 8px",
+    "缩略图实为 72×72 单元格内的 64×64 图片，顶部留 8px 给删除按钮浮出",
+    "上限固定每区 9 张，添加按钮文案随剩余数量变化",
+    "图标只引用素材：添加=pic_gray_24px.svg，删除=pic_close.svg，不自造 SVG",
+    "组件置于灰底(bg-1)内嵌区，添加按钮白底虚线框",
+    "必填/上限提示用 danger-1(#EE0A24) 12px Medium，仅空态显示"
+  ],
+  "doNotInvent": [
+    "非 72×72 的上传单元格",
+    "实底（非虚线）的添加按钮",
+    "自造的相机/删除内联 SVG 图标（应引用 assets 素材）",
+    "超过 9 张仍显示添加按钮",
+    "白底区域直接放上传组件（应在 bg-1 灰底内嵌区）"
+  ],
+  "usageScenarios": [
+    { "scenario": "签收签单上传", "variant": "empty / uploaded", "when": "签收管理卡片内上传签单照片（含必填提示）" },
+    { "scenario": "集装箱号照片", "variant": "empty / uploaded", "when": "拖车业务登记页上传集装箱号照片，每区最多 9 张" },
+    { "scenario": "异常/凭证照片", "variant": "uploaded", "when": "异常提报、操作登记等需要图片凭证的表单" }
+  ],
+  "states": [
+    { "state": "empty", "trigger": "无图片", "class": ".uploader-field（添加按钮 + 红字提示 .uploader__hint，添加文案『拍照/上传』）" },
+    { "state": "uploaded", "trigger": "已上传 1~8 张", "class": ".uploader-field.uploader-field--filled（隐藏提示；添加文案『还能传N张』+ 缩略图；超出一行横向滚动）" },
+    { "state": "full", "trigger": "已上传 9 张", "class": ".uploader-field.uploader-field--filled（隐藏添加按钮，仅缩略图，横向滚动）" }
+  ],
+  "cssClasses": ["uploader-field", "uploader-field--filled", "uploader", "uploader__cell", "uploader__add", "uploader__add-text", "uploader__thumb-img", "uploader__del", "uploader__hint"],
+  "exampleRefs": ["preview/component-uploader.html"]
+}

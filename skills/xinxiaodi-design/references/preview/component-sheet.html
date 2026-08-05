@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信小递组件 - 弹出面板 Sheet</title>
+<link rel="stylesheet" href="../ui.css">
+<script>
+/* 嵌入模式：被 index.html 以 iframe 引用(?embed=1)时隐藏侧边栏并自适应高度 */
+(function () {
+  if (new URLSearchParams(location.search).get('embed') !== '1') return;
+  var s = document.createElement('style');
+  s.textContent = '.sidebar{display:none!important}.preview-page{padding-left:24px!important;max-width:none!important}body{background:#fff!important}';
+  (document.head || document.documentElement).appendChild(s);
+  function measure() { return Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0, document.body ? document.body.offsetHeight : 0); }
+  function post() { parent.postMessage({ type: 'previewHeight', height: measure() }, '*'); }
+  function start() {
+    post();
+    if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+    [100, 300, 600, 1200].forEach(function (t) { setTimeout(post, t); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+  }
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+  window.addEventListener('resize', post);
+  window.addEventListener('wheel', function (e) {
+    parent.postMessage({ type: 'previewWheel', deltaY: e.deltaY, deltaX: e.deltaX }, '*');
+  }, { passive: true });
+})();
+</script>
+<style>
+  body { background: #F3F5F7; margin: 0; }
+  .preview-page { max-width: 555px; margin: 0 auto; padding: 24px 16px; padding-left: 140px; }
+  .preview-section { background: #FFFFFF; border-radius: 10px; padding: 24px; margin-bottom: 16px; max-width: 415px; }
+  .preview-title { font-size: 18px; font-weight: 600; color: #1D2129; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .preview-title::before { content: ''; width: 4px; height: 18px; background: #00AAA6; border-radius: 2px; }
+  .preview-desc { font-size: 12px; color: #7C8492; margin-bottom: 20px; }
+  .preview-group { margin-bottom: 24px; }
+  .preview-group-title { font-size: 14px; font-weight: 500; color: #1D2129; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #E5E6EB; }
+  .preview-label { font-size: 11px; color: #7C8492; margin-top: 6px; }
+  .preview-spec { font-size: 11px; color: #86909C; background: #F7F8FA; padding: 8px 12px; border-radius: 6px; line-height: 1.8; margin-top: 8px; }
+  .sidebar { position: fixed; left: 0; top: 0; width: 130px; height: 100vh; background: #FFFFFF; border-right: 1px solid #E5E6EB; padding: 16px 0; overflow-y: auto; z-index: 50; }
+  .sidebar__back { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #00AAA6; padding: 6px 16px; margin-bottom: 8px; text-decoration: none; border-bottom: 1px solid #E5E6EB; padding-bottom: 12px; }
+  .sidebar__title { font-size: 12px; font-weight: 600; color: #1D2129; padding: 8px 16px; }
+  .sidebar__link { display: block; font-size: 11px; color: #7C8492; padding: 6px 16px; text-decoration: none; transition: all 0.15s; }
+  .sidebar__link:hover { color: #00AAA6; background: #E6F7F6; }
+  .trigger-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #00AAA6; color: #FFF; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: 'PingFang SC', sans-serif; }
+  .trigger-btn:hover { background: #009093; }
+  /* 静态内联展示：把面板从「贴底上滑」还原为「内联卡片」以便直接看效果 */
+  .sheet-demo { max-width: 343px; }
+  .sheet-demo .sheet { transform: none; border: 1px solid #E5E6EB; border-radius: 12px; max-height: 420px; padding-bottom: 0; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <a class="sidebar__back" href="../index.html">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8L10 12" stroke="#00AAA6" stroke-width="1.5" stroke-linecap="round"/></svg>
+    返回目录
+  </a>
+  <div class="sidebar__title">弹出面板 Sheet</div>
+  <a class="sidebar__link" href="#sec-action">动作面板（列表选择）</a>
+  <a class="sidebar__link" href="#sec-picker">选择器（单列滚轮）</a>
+  <a class="sidebar__link" href="#sec-time">时间选择（多列滚轮）</a>
+  <a class="sidebar__link" href="#sec-demo">点击演示（上滑）</a>
+  <a class="sidebar__link" href="#sec-spec">规格说明</a>
+</nav>
+
+<div class="preview-page">
+  <!-- 动作面板（列表选择） -->
+  <section class="preview-section" id="sec-action">
+    <div class="preview-title">动作面板（列表选择）</div>
+    <div class="preview-desc">Figma 7813:46378 · 头部 取消/标题/确认；列表单选，选中项文字 vi-2；选项超出面板 536px 上限时内容区滚动。</div>
+    <div class="preview-group">
+      <div class="sheet-demo">
+        <div class="sheet">
+          <div class="sheet__header">
+            <span class="sheet__cancel">取消</span>
+            <span class="sheet__title">选择标题</span>
+            <span class="sheet__confirm">确认</span>
+          </div>
+          <div class="sheet__body">
+            <div class="sheet__option">选项一</div>
+            <div class="sheet__option">选项二</div>
+            <div class="sheet__option sheet__option--selected">选项三（选中状态）</div>
+            <div class="sheet__option">选项四</div>
+            <div class="sheet__option">选项五</div>
+            <div class="sheet__option">选项六</div>
+            <div class="sheet__option">选项七</div>
+            <div class="sheet__option">选项八</div>
+            <div class="sheet__option">选项九</div>
+            <div class="sheet__option">选项十</div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-label">点击任意选项切换单选高亮；列表超出面板高度时滚动</div>
+    </div>
+  </section>
+
+  <!-- 选择器（单列滚轮） -->
+  <section class="preview-section" id="sec-picker">
+    <div class="preview-title">选择器（单列滚轮）</div>
+    <div class="preview-desc">Figma 793:15136 · 单列滚轮，中间选中带高亮居中项；滚动吸附。</div>
+    <div class="preview-group">
+      <div class="sheet-demo">
+        <div class="sheet">
+          <div class="sheet__header">
+            <span class="sheet__cancel">取消</span>
+            <span class="sheet__title">标题</span>
+            <span class="sheet__confirm">确认</span>
+          </div>
+          <div class="sheet__body">
+            <div class="sheet__wheel">
+              <div class="sheet__wheel-band"></div>
+              <div class="sheet__wheel-col" id="picker-col"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-label">滚动滚轮，居中项高亮为当前值（col.dataset.value）</div>
+    </div>
+  </section>
+
+  <!-- 时间选择（多列滚轮） -->
+  <section class="preview-section" id="sec-time">
+    <div class="preview-title">时间选择（多列滚轮）</div>
+    <div class="preview-desc">Figma 869:14648 · 时/分两列滚轮，各自滚动吸附居中。</div>
+    <div class="preview-group">
+      <div class="sheet-demo">
+        <div class="sheet">
+          <div class="sheet__header">
+            <span class="sheet__cancel">取消</span>
+            <span class="sheet__title">选择时间</span>
+            <span class="sheet__confirm">确认</span>
+          </div>
+          <div class="sheet__body">
+            <div class="sheet__wheel">
+              <div class="sheet__wheel-band"></div>
+              <div class="sheet__wheel-col" id="time-hour"></div>
+              <div class="sheet__wheel-col" id="time-min"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-label">左列时(00-23) 右列分(00-59)，确认时读取两列 dataset.value 组成时间</div>
+    </div>
+  </section>
+
+  <!-- 点击演示（真实上滑面板） -->
+  <section class="preview-section" id="sec-demo">
+    <div class="preview-title">点击演示（底部上滑 + 遮罩）</div>
+    <div class="preview-desc">真实交互：遮罩 60%（限页面宽度）+ 面板上滑；取消/确认/点遮罩/Esc 关闭。</div>
+    <div class="preview-group">
+      <div class="preview-row" style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="trigger-btn" onclick="XUI.openSheet('#sheet-action')">打开动作面板</button>
+        <button class="trigger-btn" onclick="XUI.openSheet('#sheet-time')">打开时间选择</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 规格说明 -->
+  <section class="preview-section" id="sec-spec">
+    <div class="preview-title">弹出面板规格说明</div>
+    <div class="preview-desc">Sheet 系统参数一览</div>
+    <div class="preview-spec">
+      <strong>遮罩 .sheet-overlay</strong><br>
+      bg rgba(0,0,0,0.6) | 限页面宽度(375居中) | 底部对齐 | 默认 display:none<br><br>
+      <strong>面板 .sheet</strong><br>
+      白底 | 顶部圆角 16px | max-height 536px（超出内容区滚动）| 上滑动画<br><br>
+      <strong>头部 .sheet__header</strong><br>
+      高 52px | 左 .sheet__cancel 取消(14px text-2) | 中 .sheet__title 标题(16px 600) | 右 .sheet__confirm 确认(14px vi-2)<br><br>
+      <strong>列表项 .sheet__option</strong><br>
+      高 48px | 16px | 0.5px 分割线 | 选中 .sheet__option--selected 文字 vi-2<br><br>
+      <strong>滚轮 .sheet__wheel</strong><br>
+      区高 220px | 中间 44px 选中带 .sheet__wheel-band<br>
+      列 .sheet__wheel-col: scroll-snap + padding 88px 0（可多列）<br>
+      项 .sheet__wheel-item 高 44px、字号 16px；居中 .sheet__wheel-item--active 加粗深色
+    </div>
+  </section>
+</div>
+
+<!-- 真实上滑面板（供点击演示） -->
+<div class="sheet-overlay" id="sheet-action">
+  <div class="sheet">
+    <div class="sheet__header">
+      <span class="sheet__cancel" onclick="XUI.closeSheet('#sheet-action')">取消</span>
+      <span class="sheet__title">选择标题</span>
+      <span class="sheet__confirm" onclick="XUI.closeSheet('#sheet-action')">确认</span>
+    </div>
+    <div class="sheet__body">
+      <div class="sheet__option">选项一</div>
+      <div class="sheet__option">选项二</div>
+      <div class="sheet__option sheet__option--selected">选项三（选中状态）</div>
+      <div class="sheet__option">选项四</div>
+      <div class="sheet__option">选项五</div>
+      <div class="sheet__option">选项六</div>
+      <div class="sheet__option">选项七</div>
+      <div class="sheet__option">选项八</div>
+      <div class="sheet__option">选项九</div>
+      <div class="sheet__option">选项十</div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheet-time">
+  <div class="sheet">
+    <div class="sheet__header">
+      <span class="sheet__cancel" onclick="XUI.closeSheet('#sheet-time')">取消</span>
+      <span class="sheet__title">选择时间</span>
+      <span class="sheet__confirm" onclick="XUI.closeSheet('#sheet-time')">确认</span>
+    </div>
+    <div class="sheet__body">
+      <div class="sheet__wheel">
+        <div class="sheet__wheel-band"></div>
+        <div class="sheet__wheel-col" id="time-hour2"></div>
+        <div class="sheet__wheel-col" id="time-min2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 生成滚轮项（在 ui.js 自动初始化前填充，保证 initWheel 能识别）
+function fillWheel(colId, count, pad, activeIdx) {
+  var col = document.getElementById(colId);
+  if (!col) return;
+  var html = '';
+  for (var i = 0; i < count; i++) {
+    var v = pad ? ('0' + i).slice(-2) : String(i);
+    html += '<div class="sheet__wheel-item' + (i === activeIdx ? ' sheet__wheel-item--active' : '') + '">' + v + '</div>';
+  }
+  col.innerHTML = html;
+}
+function fillOptions(colId, labels, activeIdx) {
+  var col = document.getElementById(colId);
+  if (!col) return;
+  col.innerHTML = labels.map(function (t, i) {
+    return '<div class="sheet__wheel-item' + (i === activeIdx ? ' sheet__wheel-item--active' : '') + '">' + t + '</div>';
+  }).join('');
+}
+fillOptions('picker-col', ['选项一', '选项二', '选项三', '选项四', '选项五', '选项六', '选项七', '选项八'], 2);
+fillWheel('time-hour', 24, true, 12);
+fillWheel('time-min', 60, true, 0);
+fillWheel('time-hour2', 24, true, 12);
+fillWheel('time-min2', 60, true, 0);
+</script>
+<script src="../ui.js"></script>
+</body>
+</html>

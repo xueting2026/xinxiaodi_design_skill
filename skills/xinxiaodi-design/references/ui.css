@@ -568,6 +568,56 @@ body {
   cursor: not-allowed;
 }
 
+/* --------------------------------------------------------------------------
+   文本域 Textarea（多行输入，带字数计数器）
+   与 .input 同族：border-1、radius-sm、14px、focus vi-2 + focus-ring。
+   .textarea-field 为定位容器，字数计数器 .textarea-counter 固定右下角。
+   -------------------------------------------------------------------------- */
+.textarea-field {
+  position: relative;
+  width: 100%;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px 22px;   /* 底部留白给字数计数器 */
+  font-size: 14px;
+  font-family: var(--font-family);
+  color: var(--text-3);
+  line-height: 20px;
+  background: var(--white);
+  outline: none;
+  resize: none;
+  transition: border-color var(--duration-base), box-shadow var(--duration-base);
+}
+
+.textarea::placeholder {
+  color: var(--gray-4);
+}
+
+.textarea:focus {
+  border-color: var(--vi-2);
+  box-shadow: 0 0 0 2px var(--brand-focus-ring);
+}
+
+.textarea--error {
+  border-color: var(--danger-1);
+}
+
+/* 字数计数器：右下角，跟随输入更新（N/max） */
+.textarea-counter {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-size: 12px;
+  color: var(--text-1);
+  line-height: 18px;
+  pointer-events: none;
+}
+
 /* ==========================================================================
    5. 搜索框 Search Box
    ========================================================================== */
@@ -1138,6 +1188,109 @@ body {
   gap: 8px;
 }
 
+/* --------------------------------------------------------------------------
+   拖车业务卡片结构原子类（结构与运单卡片类似，复用上方 .card__* 原子类）
+   大卡片 = 场站头（.card__location + 标签 + .card__addr--wrap + .card__warehouse）
+          → 分割线 → 多个运单信息小卡片（.card__dispatch + .card__grid + .card__footer）
+   -------------------------------------------------------------------------- */
+
+/* 地址允许换行（拖车场站地址较长，最多 2 行，超出省略；与运单卡片单行省略区分） */
+.card__addr--wrap {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 运单信息字段网格：短字段一排 2 个各占 50%，长字段独占一行 100%。
+   置于 .card__order-body（灰底）内，自身不带边距，行间距由 row-gap 提供。
+   短字段值超出 50% 列宽时单行省略(...)；长字段完整显示（可换行）。 */
+.card__grid {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.card__grid-item {
+  width: 50%;
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.card__grid-item--full {
+  width: 100%;
+}
+
+.card__grid-label {
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+
+/* 短字段值：占满剩余宽度，超出单行省略 */
+.card__grid-value {
+  color: var(--text-3);
+  margin-left: 8px;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 长字段值：完整显示，允许换行，不省略 */
+.card__grid-item--full .card__grid-value {
+  white-space: normal;
+  overflow: visible;
+  word-break: break-all;
+}
+
+/* 拖车业务卡片：运单小卡片绿底头部的"运单号"标签（12px Medium 加粗，主文字色 color-text-1 / #1D2129） */
+.card__waybill-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-1);
+  flex-shrink: 0;
+}
+
+/* 拖车业务卡片：运单小卡片包裹层（左右 16px，底部 8px：运单小卡片之间/与卡片底部间距） */
+.card__waybill {
+  padding: 0 16px 8px;
+}
+
+/* 拖车业务卡片：运单小卡片底部操作按钮区（右对齐，距上 8px；左右由 .card__waybill 提供） */
+.card__waybill-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   拖车业务卡片容器修饰 .card--trailer：收敛拖车专属间距
+   -------------------------------------------------------------------------- */
+
+/* 调度单号（D…）行上下间距统一 8px */
+.card--trailer .card__dispatch {
+  padding: 8px 16px;
+}
+
+.card--trailer .card__dispatch-row {
+  margin-bottom: 0;
+}
+
+/* 运单小卡片间距由 .card__waybill / .card__waybill-actions 控制，取消 .card__order 自带下边距 */
+.card--trailer .card__order {
+  margin-bottom: 0;
+}
+
+/* 运单号绿底头下方分割线：0.5px，color-border-3 */
+.card--trailer .card__order-top {
+  border-bottom: 0.5px solid var(--color-border-3);
+}
+
 /* ==========================================================================
    9. Tab 切换
    ========================================================================== */
@@ -1180,12 +1333,18 @@ body {
 .dialog-overlay {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  /* 遮罩限制在页面宽度内（设计宽度 375px，居中），不铺满整个浏览器视口 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--page-width);   /* 375px */
+  max-width: 100%;
+  /* 遮罩色：#000000 透明度 60% */
+  background: rgba(0,0,0,0.6);
   z-index: 1000;
-  display: flex;
+  /* 默认隐藏：display:none 而非仅 opacity:0，避免不可见蒙层拦截点击。
+     XUI.openDialog 打开时置 display:flex 再加 --visible 做淡入。 */
+  display: none;
   align-items: center;
   justify-content: center;
   opacity: 0;
@@ -1724,6 +1883,24 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   字色修饰符 Ink（独立于背景，按底色深浅选择文字/图标颜色）
+   用法：背景变体 + ink 修饰符自由组合，补齐「透明背景 + 深色字」等组合。
+     · 浅底（白底/浅色渐变）→ 加 --ink-dark（深色字，默认已由 --dark/--solid 提供）
+     · 深底（品牌色/深色渐变）→ 加 --ink-light（白色字，默认已由 --light/--transparent 提供）
+   判定：取状态栏正后方背景色算相对亮度，亮度高用 ink-dark，低用 ink-light。
+   放在各背景变体规则之后，保证组合时字色以 ink 修饰符为准。
+   -------------------------------------------------------------------------- */
+.statusbar--ink-dark .statusbar__time { color: var(--text-3); }
+.statusbar--ink-dark .statusbar__icons svg { fill: var(--text-3); }
+.statusbar--ink-light .statusbar__time { color: var(--white); }
+.statusbar--ink-light .statusbar__icons svg { fill: var(--white); }
+
+.titlebar--ink-dark .titlebar__title { color: var(--text-3); }
+.titlebar--ink-dark .titlebar__back svg { stroke: var(--text-3); }
+.titlebar--ink-light .titlebar__title { color: var(--white); }
+.titlebar--ink-light .titlebar__back svg { stroke: var(--white); }
+
+/* --------------------------------------------------------------------------
    状态栏 + 标题栏 分组容器 Demo Top Bar
    说明：状态栏和标题栏合为一组，仅用于 demo / 原型预览还原真机顶部效果。
    开发时系统/小程序会自带顶部，无需实现——可通过 .demo-topbar { display:none }
@@ -1795,6 +1972,19 @@ body {
   padding: 0;
 }
 
+/* 底部固定操作栏：操作页/详情页底部提交区，白底 + 顶部细线，内含大按钮(.btn--lg)。
+   sticky bottom 贴视口底部；内容区需预留 padding-bottom 避免被遮挡。 */
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--white);
+  border-top: 0.5px solid var(--border-1);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+  padding: var(--space-2) var(--page-margin);   /* 8px 16px */
+  padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+}
+
 /* ==========================================================================
    18. 工具类 Utilities
    ========================================================================== */
@@ -1837,3 +2027,346 @@ body {
 .p-12 { padding: var(--space-3); }
 .p-16 { padding: var(--space-4); }
 .px-16 { padding-left: var(--space-4); padding-right: var(--space-4); }
+
+/* ==========================================================================
+   19. 菜单列表项 Menu Item
+   用途：通用导航页（功能选择页 Hub）中的纵向列表入口行。
+   每行由左侧图标+文字、右侧箭头组成，点击进入对应功能页面。
+   结构：
+     .menu-list               纵向列表容器，gap-12
+     .menu-item               单行容器（白底圆角卡片，padding 16px）
+     .menu-item__left         左侧区域（图标 + 文字，水平排列，gap-12）
+     .menu-item__icon         24×24 图标
+     .menu-item__label        文字标签（14px Semibold，color-text-1）
+     .menu-item__arrow        16×16 右箭头图标（贴右侧）
+   ========================================================================== */
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);   /* 12px */
+  padding: var(--space-4) var(--space-4) 0;   /* 16px 16px 0 */
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-fill-white);
+  border-radius: var(--radius-card);   /* 10px */
+  padding: var(--space-4);             /* 16px */
+  cursor: pointer;
+}
+
+.menu-item__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);   /* 12px */
+}
+
+.menu-item__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.menu-item__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--color-text-1);
+}
+
+.menu-item__arrow {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   20. 图片上传 Image Upload（拍照/上传）
+   用途：签收签单、集装箱号照片等图片采集。置于灰底(bg-1)区域内。
+   添加按钮与缩略图统一 72×72，横向排列自动换行；每个上传区最多 9 张。
+   ========================================================================== */
+
+/* 上传字段：空态 = 添加按钮 + 红字提示并排；有图态(.uploader-field--filled) = 隐藏提示、缩略图行可左右滚动 */
+.uploader-field {
+  display: flex;
+  gap: var(--space-2);   /* 8px */
+  align-items: flex-start;
+}
+
+.uploader-field--filled {
+  display: block;
+}
+
+.uploader-field--filled .uploader__hint {
+  display: none;
+}
+
+.uploader-field--filled .uploader {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+
+/* 上传行：添加按钮 + 缩略图，单行不换行；超出一行时由 .uploader-field--filled 横向滚动 */
+.uploader {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-2);   /* 8px */
+}
+
+/* 上传单元格（添加按钮/缩略图统一尺寸 72×72） */
+.uploader__cell {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+/* 添加按钮：白底虚线框，居中图标 + 文案（默认「拍照/上传」，有图后「还能传N张」） */
+.uploader__add {
+  background: var(--white);
+  border: 1px dashed var(--border-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);   /* 4px */
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.uploader__add img {
+  width: 24px;
+  height: 24px;
+}
+
+.uploader__add-text {
+  font-size: 10px;
+  color: var(--text-2);
+  line-height: 14px;
+}
+
+/* 缩略图：64×64 图片置于 72×72 单元格内，顶部留 8px 给删除按钮 */
+.uploader__thumb-img {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--white);
+}
+
+/* 删除按钮：右上角，引用 pic_close 图标（深色半透明圆 + 白描边 + ×，20px，不自造 SVG） */
+.uploader__del {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.uploader__del img {
+  width: 20px;
+  height: 20px;
+}
+
+/* 提示文案（必填/上限说明），danger 色。空态置于添加按钮右侧（flex:1），上传后隐藏 */
+.uploader__hint {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--danger-1);
+  line-height: 18px;
+}
+
+/* ==========================================================================
+   21. 弹出面板 Sheet（动作面板 / 选择器 / 时间选择）
+   底部上滑面板：60% 遮罩（限页面宽度）+ 顶部圆角面板；
+   头部左「取消」/ 中「标题」/ 右「确认」；内容区最高 536px，超出滚动。
+   三种内容变体：
+     - 动作面板 list-select：.sheet__option 列表（单选高亮 vi-2）
+     - 选择器/时间选择 wheel：.sheet__wheel 滚轮（中间高亮，可多列）
+   ========================================================================== */
+
+.sheet-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--page-width);
+  max-width: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: none;                 /* 默认隐藏，不拦截点击 */
+  align-items: flex-end;         /* 面板贴底 */
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-slow);
+}
+
+.sheet-overlay--visible {
+  opacity: 1;
+}
+
+.sheet {
+  width: 100%;
+  background: var(--white);
+  border-radius: 16px 16px 0 0;
+  max-height: 536px;             /* 最高 536px，超出内容区滚动 */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transform: translateY(100%);
+  transition: transform var(--duration-slow);
+}
+
+.sheet-overlay--visible .sheet {
+  transform: translateY(0);
+}
+
+/* 头部：取消 / 标题 / 确认 */
+.sheet__header {
+  flex-shrink: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.sheet__cancel {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.sheet__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-3);
+  line-height: 24px;
+}
+
+.sheet__confirm {
+  font-size: 14px;
+  color: var(--vi-2);
+  line-height: 20px;
+  cursor: pointer;
+}
+
+/* 内容区：可滚动，最高受 .sheet 的 536px 约束 */
+.sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- 动作面板 / 列表选择：可点选项 --- */
+.sheet__option {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 16px;
+  color: var(--text-3);
+  line-height: 24px;
+  border-bottom: 0.5px solid var(--border-1);
+  cursor: pointer;
+}
+
+.sheet__option:last-child {
+  border-bottom: none;
+}
+
+.sheet__option--selected {
+  color: var(--vi-2);
+}
+
+/* --- 选择器 / 时间选择：滚轮 --- */
+.sheet__wheel {
+  position: relative;
+  height: 220px;
+  display: flex;
+}
+
+/* 中间选中带（上下 0.5px 细线，高度 = 单项 44px） */
+.sheet__wheel-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 88px;                     /* (220 - 44) / 2 */
+  height: 44px;
+  border-top: 0.5px solid var(--border-1);
+  border-bottom: 0.5px solid var(--border-1);
+  pointer-events: none;
+}
+
+.sheet__wheel-col {
+  flex: 1;
+  height: 220px;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  padding: 88px 0;               /* 让首/末项也能滚到中心 */
+  text-align: center;
+  scrollbar-width: none;
+}
+
+.sheet__wheel-col::-webkit-scrollbar {
+  display: none;
+}
+
+.sheet__wheel-item {
+  height: 44px;
+  line-height: 44px;
+  scroll-snap-align: center;
+  font-size: 16px;
+  color: var(--text-1);
+  transition: color var(--duration-base);
+}
+
+.sheet__wheel-item--active {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   22. 吐司 Toast（轻提示）
+   居中偏下、深色半透明胶囊，短暂显示后自动消失。用 XUI.toast(msg) 触发。
+   ========================================================================== */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%);
+  max-width: 300px;
+  background: rgba(29, 33, 41, 0.9);
+  color: var(--white);
+  font-size: 14px;
+  line-height: 20px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  z-index: 2000;
+  text-align: center;
+  opacity: 0;
+  transition: opacity var(--duration-base);
+  pointer-events: none;
+}
+
+.toast--visible {
+  opacity: 1;
+}
