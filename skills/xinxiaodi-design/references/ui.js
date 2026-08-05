@@ -375,6 +375,137 @@
   };
 
   /* ==========================================================================
+     8.1 文本域字数计数器
+     ========================================================================== */
+
+  /**
+   * 初始化文本域字数计数器（.textarea-field 内的 .textarea + .textarea-counter）
+   * 计数器显示 N/max（max 取 textarea 的 maxlength），随输入更新
+   * @param {string} [selector] - 文本域字段容器选择器（默认 '.textarea-field'）
+   */
+  XUI.initTextarea = function (selector) {
+    const fields = document.querySelectorAll(selector || '.textarea-field');
+    fields.forEach(field => {
+      const ta = field.querySelector('.textarea');
+      const counter = field.querySelector('.textarea-counter');
+      if (!ta || !counter) return;
+      const max = ta.getAttribute('maxlength');
+      const update = () => {
+        const len = ta.value.length;
+        counter.textContent = max ? (len + '/' + max) : String(len);
+      };
+      ta.addEventListener('input', update);
+      update();
+    });
+  };
+
+  /* ==========================================================================
+     8.2 弹出面板 Sheet（动作面板 / 选择器 / 时间选择）
+     ========================================================================== */
+
+  /**
+   * 打开底部面板
+   * @param {string|HTMLElement} sheetOrSelector - .sheet-overlay 元素或选择器
+   */
+  XUI.openSheet = function (sheetOrSelector) {
+    const overlay = typeof sheetOrSelector === 'string'
+      ? document.querySelector(sheetOrSelector)
+      : sheetOrSelector;
+    if (!overlay) return;
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('sheet-overlay--visible'));
+
+    // 重新居中滚轮（隐藏时高度为 0 无法定位，打开后按激活项归位）
+    overlay.querySelectorAll('.sheet__wheel-col').forEach(col => {
+      const items = col.querySelectorAll('.sheet__wheel-item');
+      let idx = 0;
+      items.forEach((it, i) => { if (it.classList.contains('sheet__wheel-item--active')) idx = i; });
+      requestAnimationFrame(() => { col.scrollTop = idx * 44; });
+    });
+
+    const escHandler = (e) => {
+      if (e.key === 'Escape') { XUI.closeSheet(overlay); document.removeEventListener('keydown', escHandler); }
+    };
+    document.addEventListener('keydown', escHandler);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) XUI.closeSheet(overlay);
+    }, { once: true });
+  };
+
+  /**
+   * 关闭底部面板
+   * @param {string|HTMLElement} sheetOrSelector - .sheet-overlay 元素或选择器
+   */
+  XUI.closeSheet = function (sheetOrSelector) {
+    const overlay = typeof sheetOrSelector === 'string'
+      ? document.querySelector(sheetOrSelector)
+      : sheetOrSelector;
+    if (!overlay) return;
+    overlay.classList.remove('sheet-overlay--visible');
+    setTimeout(() => { overlay.style.display = 'none'; }, 250);
+  };
+
+  /**
+   * 初始化列表选择面板（动作面板）：点击 .sheet__option 单选高亮
+   * @param {string} [containerSelector] - 面板容器选择器（默认 '.sheet'，覆盖弹层与静态面板）
+   */
+  XUI.initSheetOptions = function (containerSelector) {
+    document.querySelectorAll(containerSelector || '.sheet').forEach(overlay => {
+      const options = overlay.querySelectorAll('.sheet__option');
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          options.forEach(o => o.classList.remove('sheet__option--selected'));
+          opt.classList.add('sheet__option--selected');
+        });
+      });
+    });
+  };
+
+  /**
+   * 初始化滚轮列（选择器 / 时间选择）：滚动吸附 + 中心项高亮，值存于 col.dataset.value
+   * @param {string} [colSelector] - 滚轮列选择器（默认 '.sheet__wheel-col'）
+   */
+  XUI.initWheel = function (colSelector) {
+    const ITEM_H = 44;
+    document.querySelectorAll(colSelector || '.sheet__wheel-col').forEach(col => {
+      const items = col.querySelectorAll('.sheet__wheel-item');
+      const mark = () => {
+        const idx = Math.max(0, Math.min(items.length - 1, Math.round(col.scrollTop / ITEM_H)));
+        items.forEach((it, i) => it.classList.toggle('sheet__wheel-item--active', i === idx));
+        if (items[idx]) col.dataset.value = items[idx].textContent.trim();
+      };
+      let t;
+      col.addEventListener('scroll', () => { mark(); clearTimeout(t); t = setTimeout(mark, 80); });
+      // 初始定位到已激活项（或第一项）
+      let initIdx = 0;
+      items.forEach((it, i) => { if (it.classList.contains('sheet__wheel-item--active')) initIdx = i; });
+      col.scrollTop = initIdx * ITEM_H;
+      mark();
+    });
+  };
+
+  /* ==========================================================================
+     8.3 吐司 Toast
+     ========================================================================== */
+
+  /**
+   * 轻提示：居中偏下短暂显示后自动消失
+   * @param {string} msg - 提示文案
+   * @param {number} [duration] - 显示时长 ms（默认 2000）
+   */
+  XUI.toast = function (msg, duration) {
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function () { t.classList.add('toast--visible'); });
+    setTimeout(function () {
+      t.classList.remove('toast--visible');
+      setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 250);
+    }, duration || 2000);
+  };
+
+  /* ==========================================================================
      9. 自动初始化
      ========================================================================== */
 
@@ -390,6 +521,9 @@
     XUI.initCheckbox('.checkbox');
     XUI.initButtonGroupMore('.btn-group__more');
     XUI.initLocationBar('.location-bar');
+    XUI.initTextarea('.textarea-field');
+    XUI.initSheetOptions('.sheet');
+    XUI.initWheel('.sheet__wheel-col');
   };
 
   // DOM Ready 时自动初始化

@@ -209,6 +209,30 @@
     { "state": "titlebar-transparent", "trigger": "渐变头部页", "class": "titlebar titlebar--transparent（透明 + 白色标题）" },
     { "state": "topbar-hidden", "trigger": "开发环境隐藏顶部", "class": "demo-topbar--hidden（整组顶部一次性隐藏）" }
   ],
-  "cssClasses": ["statusbar", "statusbar__time", "statusbar__icons", "statusbar--dark", "statusbar--light", "titlebar", "titlebar__back", "titlebar__title", "titlebar__right", "titlebar--solid", "titlebar--transparent", "titlebar__capsule", "demo-topbar", "demo-topbar--hidden"],
+  "inkModifiers": {
+    "$description": "背景与字色是两个独立维度。--dark/--light（状态栏）与 --solid/--transparent（标题栏）是「背景 + 默认字色」的快捷组合；当背景与默认字色不匹配时（如透明背景叠在浅色渐变上），用 --ink-dark / --ink-light 单独覆盖字色，补齐 4 种组合。",
+    "rule": "取状态栏/标题栏正后方的背景色，算 WCAG 相对亮度：亮度高（浅底，如白底/浅色渐变）→ --ink-dark（深色字）；亮度低（深底，如品牌色/深色渐变）→ --ink-light（白色字）。工程判定：比较深色字(#1D2129)与白字对该底色的对比度，取更高者。底色为照片/复杂图时无法可靠判定，应加半透明蒙层或询问。",
+    "classes": {
+      "statusbar--ink-dark": "状态栏深色文字/图标（配深色系统图标 bar_status_black.svg）",
+      "statusbar--ink-light": "状态栏白色文字/图标（配白色系统图标 bar_status_white.svg）",
+      "titlebar--ink-dark": "标题栏深色标题/返回箭头（配深色胶囊 bar_navbar_black.svg）",
+      "titlebar--ink-light": "标题栏白色标题/返回箭头（配透明/白色胶囊 bar_navbar_transparent.svg）"
+    },
+    "combos": {
+      "白底 + 深色字": "statusbar--dark（快捷）/ titlebar--solid（快捷）",
+      "深色/饱和渐变底 + 白字": "statusbar--light + titlebar--transparent（快捷，白字为默认）",
+      "浅色渐变底 + 深色字": "statusbar--light statusbar--ink-dark + titlebar--transparent titlebar--ink-dark（透明背景透出浅渐变，字改深色）",
+      "深色实底 + 白字": "statusbar--dark statusbar--ink-light（少见，白底变体上覆盖白字需自定背景）"
+    },
+    "capsuleIconByInk": {
+      "ink-dark": "assets/icons/iPhoneX/miniapp/bar_navbar_black.svg",
+      "ink-light": "assets/icons/iPhoneX/miniapp/bar_navbar_transparent.svg"
+    },
+    "statusIconByInk": {
+      "ink-dark": "assets/icons/bar_status_black.svg",
+      "ink-light": "assets/icons/bar_status_white.svg"
+    }
+  },
+  "cssClasses": ["statusbar", "statusbar__time", "statusbar__icons", "statusbar--dark", "statusbar--light", "statusbar--ink-dark", "statusbar--ink-light", "titlebar", "titlebar__back", "titlebar__title", "titlebar__right", "titlebar--solid", "titlebar--transparent", "titlebar--ink-dark", "titlebar--ink-light", "titlebar__capsule", "demo-topbar", "demo-topbar--hidden"],
   "exampleRefs": ["examples/demo-home.html", "examples/demo-list.html", "preview/component-statusbar-titlebar.html"]
 }

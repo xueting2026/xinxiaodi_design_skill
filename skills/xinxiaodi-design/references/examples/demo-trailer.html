@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 拖车业务</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: var(--bg-1);
+  width: 375px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.demo-topbar { position: sticky; top: 0; z-index: 50; }
+
+/* 业务卡片区（页面私有）
+   卡片填充=Figma 稿双层叠加：纯白底 + 顶部约16.6%高度的线性渐变。
+   渐变色（#aff0b5/#ffb65d）为 Figma 稿指定装饰色，token 体系无对应项。 */
+.trailer-section {
+  background:
+    linear-gradient(180deg, var(--trailer-section-tint, transparent) 0%, transparent 16.6%),
+    var(--white);
+  border-radius: 10px;
+  margin: 12px 16px;
+  padding: 16px;
+}
+.trailer-section--green  { --trailer-section-tint: rgba(175, 240, 181, 0.2); }
+.trailer-section--orange { --trailer-section-tint: rgba(255, 182, 93, 0.2); }
+
+/* 3 列功能球网格：gap 与 Figma 稿 11~12px 对齐 */
+.trailer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 96px);
+  justify-content: space-between;
+  gap: 12px 11px;
+}
+
+/* 单个功能球 */
+.trailer-item {
+  width: 96px;
+  height: 98px;
+  background: var(--white);
+  border: 1px solid var(--border-1);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  cursor: pointer;
+}
+
+.trailer-item__icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.trailer-item__label {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-3);
+}
+
+/* 数字角标 */
+.trailer-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--danger-1);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1;
+  z-index: 2;
+}
+
+/* 底部 Home Indicator（设计系统暂无该组件，页面私有实现） */
+.home-indicator {
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: #000000;
+  border-radius: 999px;
+  z-index: 50;
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏 -->
+<div class="demo-topbar">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_black.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="navigateToHome()" aria-label="返回">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="titlebar__title">拖车业务</span>
+  </div>
+</div>
+
+<!-- 定位栏（组件） -->
+<div class="location-bar">
+  <img class="location-bar__icon" src="../assets/icons/position_green_16px.svg" style="width:16px;height:16px;" alt="定位" />
+  <span class="location-bar__address">山东省青岛市市南区江西路11号山东省青岛市市南区江西路11号</span>
+</div>
+
+<!-- 业务卡片区（绿色系6个） -->
+<div class="trailer-section trailer-section--green">
+  <div class="trailer-grid">
+    <div class="trailer-item" onclick="location.href='demo-trailer-tigui.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/tigui.svg" alt="提柜" />
+      <span class="trailer-item__label">提柜</span>
+      <span class="trailer-badge">9</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-ruyuan.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/ruyuan.svg" alt="入园" />
+      <span class="trailer-item__label">入园</span>
+      <span class="trailer-badge">20</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-luogui.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/luogui.svg" alt="落柜" />
+      <span class="trailer-item__label">落柜</span>
+      <span class="trailer-badge">20</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-tizhonggui.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/tizhonggui.svg" alt="提重柜" />
+      <span class="trailer-item__label">提重柜</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-liyuan.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/liyuan.svg" alt="离园" />
+      <span class="trailer-item__label">离园</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-fanzhonggui.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/fanzhonggui.svg" alt="返重柜" />
+      <span class="trailer-item__label">返重柜</span>
+    </div>
+  </div>
+</div>
+
+<div class="trailer-section trailer-section--orange">
+  <div class="trailer-grid">
+    <div class="trailer-item" onclick="XUI.toast('换车接单功能建设中')">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/huanchejiedan.svg" alt="换车接单" />
+      <span class="trailer-item__label">换车接单</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-weighing.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/guobang.svg" alt="过磅" />
+      <span class="trailer-item__label">过磅</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-trailer-reschedule.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/gaiyue.svg" alt="改约" />
+      <span class="trailer-item__label">改约</span>
+    </div>
+    <div class="trailer-item" onclick="location.href='demo-exception-report.html'">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/yichangtibao.svg" alt="异常提报" />
+      <span class="trailer-item__label">异常提报</span>
+    </div>
+  </div>
+</div>
+
+<!-- 底部 Home Indicator -->
+<div class="home-indicator"></div>
+
+<script src="../ui.js"></script>
+<script>
+function navigateToHome() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'page-home' }, '*');
+  } else {
+    window.location.href = 'demo-home.html';
+  }
+}
+</script>
+
+</body>
+</html>

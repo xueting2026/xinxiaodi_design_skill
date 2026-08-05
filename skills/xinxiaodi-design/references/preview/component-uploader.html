@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信小递组件 - 图片上传 Image Upload</title>
+<link rel="stylesheet" href="../ui.css">
+<script>
+/* 嵌入模式：被 index.html 以 iframe 引用(?embed=1)时隐藏侧边栏并自适应高度，保证组件只维护一份 */
+(function () {
+  if (new URLSearchParams(location.search).get('embed') !== '1') return;
+  var s = document.createElement('style');
+  s.textContent = '.sidebar{display:none!important}.preview-page{padding-left:24px!important;max-width:none!important}body{background:#fff!important}';
+  (document.head || document.documentElement).appendChild(s);
+  function measure() { return Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0, document.body ? document.body.offsetHeight : 0); }
+  function post() { parent.postMessage({ type: 'previewHeight', height: measure() }, '*'); }
+  function start() {
+    post();
+    if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+    [100, 300, 600, 1200].forEach(function (t) { setTimeout(post, t); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(post);
+    Array.prototype.forEach.call(document.images, function (img) { if (!img.complete) img.addEventListener('load', post); });
+  }
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+  window.addEventListener('resize', post);
+  window.addEventListener('wheel', function (e) {
+    parent.postMessage({ type: 'previewWheel', deltaY: e.deltaY, deltaX: e.deltaX }, '*');
+  }, { passive: true });
+})();
+</script>
+<style>
+  body { background: #F3F5F7; margin: 0; }
+  .preview-page { max-width: 555px; margin: 0 auto; padding: 24px 16px; padding-left: 140px; }
+  .preview-section { background: #FFFFFF; border-radius: 10px; padding: 24px; margin-bottom: 16px; max-width: 415px; }
+  .preview-title { font-size: 18px; font-weight: 600; color: #1D2129; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .preview-title::before { content: ''; width: 4px; height: 18px; background: #00AAA6; border-radius: 2px; }
+  .preview-desc { font-size: 12px; color: #7C8492; margin-bottom: 20px; }
+  .preview-group { margin-bottom: 24px; }
+  .preview-group-title { font-size: 14px; font-weight: 500; color: #1D2129; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #E5E6EB; }
+  .preview-label { font-size: 11px; color: #7C8492; margin-top: 6px; }
+  .preview-spec { font-size: 11px; color: #86909C; background: #F7F8FA; padding: 8px 12px; border-radius: 6px; line-height: 1.8; margin-top: 8px; }
+  .sidebar { position: fixed; left: 0; top: 0; width: 130px; height: 100vh; background: #FFFFFF; border-right: 1px solid #E5E6EB; padding: 16px 0; overflow-y: auto; z-index: 50; }
+  .sidebar__back { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #00AAA6; padding: 6px 16px; margin-bottom: 8px; text-decoration: none; border-bottom: 1px solid #E5E6EB; padding-bottom: 12px; }
+  .sidebar__back:hover { opacity: 0.7; }
+  .sidebar__title { font-size: 12px; font-weight: 600; color: #1D2129; padding: 8px 16px; }
+  .sidebar__link { display: block; font-size: 11px; color: #7C8492; padding: 6px 16px; text-decoration: none; transition: all 0.15s; }
+  .sidebar__link:hover { color: #00AAA6; background: #E6F7F6; }
+  /* 上传组件演示置于灰底内嵌区（bg-1） */
+  .upload-demo-wrap { background: #F2F3F5; padding: 16px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <a class="sidebar__back" href="../index.html">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8L10 12" stroke="#00AAA6" stroke-width="1.5" stroke-linecap="round"/></svg>
+    返回目录
+  </a>
+  <div class="sidebar__title">图片上传 Image Upload</div>
+  <a class="sidebar__link" href="#sec-empty">默认（空）状态</a>
+  <a class="sidebar__link" href="#sec-uploaded">已上传（可交互）</a>
+  <a class="sidebar__link" href="#sec-spec">规格说明</a>
+</nav>
+
+<div class="preview-page">
+  <!-- 默认（空）状态 -->
+  <section class="preview-section" id="sec-empty">
+    <div class="preview-title">默认（空）状态</div>
+    <div class="preview-desc">Figma 7799:43772 · 拍照/上传图片组件。添加按钮与缩略图统一 72×72，置于灰底(bg-1)内嵌区，每个上传区最多 9 张。</div>
+    <div class="preview-group">
+      <div class="upload-demo-wrap">
+        <div class="uploader-field">
+          <div class="uploader">
+            <div class="uploader__cell uploader__add" onclick="uploaderAdd(this)">
+              <img src="../assets/icons/pic_gray_24px.svg" alt="">
+              <span class="uploader__add-text">拍照/上传</span>
+            </div>
+          </div>
+          <div class="uploader__hint">（必填）请上传【集装箱号照片】！每个上传图片区域最多允许上传 9 张</div>
+        </div>
+      </div>
+      <div class="preview-label">空态显示红字提示（.uploader__hint danger 色）+ 添加按钮；点击「拍照/上传」上传后红字消失，切换为有图态。可点此处添加体验。</div>
+    </div>
+  </section>
+
+  <!-- 已上传状态（可交互） -->
+  <section class="preview-section" id="sec-uploaded">
+    <div class="preview-title">已上传状态（可交互）</div>
+    <div class="preview-desc">上传后红字提示消失，切换为有图态。缩略图超出一行时整行左右滚动（横向滑动查看）；添加按钮文案随剩余数量更新为「还能传N张」，满 9 张隐藏。点缩略图右上角删除。</div>
+    <div class="preview-group">
+      <div class="upload-demo-wrap">
+        <div class="uploader-field uploader-field--filled">
+          <div class="uploader">
+            <div class="uploader__cell uploader__add" onclick="uploaderAdd(this)">
+              <img src="../assets/icons/pic_gray_24px.svg" alt="">
+              <span class="uploader__add-text">拍照/上传</span>
+            </div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#7FDCDA,#00AAA6);"></div><span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span></div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#FFD08A,#FF7D00);"></div><span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span></div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#94BFFF,#165DFF);"></div><span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span></div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#C396ED,#722ED1);"></div><span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span></div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#7BE188,#00B42A);"></div><span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span></div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#F98981,#F53F3F);"></div><span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span></div>
+          </div>
+          <div class="uploader__hint">（必填）请上传【集装箱号照片】！每个上传图片区域最多允许上传 9 张</div>
+        </div>
+      </div>
+      <div class="preview-label">缩略图较多时可左右滑动查看；点虚线框新增（演示用占位色块），点缩略图右上角 × 删除</div>
+    </div>
+  </section>
+
+  <!-- 规格说明 -->
+  <section class="preview-section" id="sec-spec">
+    <div class="preview-title">图片上传规格说明</div>
+    <div class="preview-desc">组件参数一览</div>
+    <div class="preview-spec">
+      <strong>上传字段 .uploader-field</strong><br>
+      空态: flex 行（.uploader 添加按钮 + .uploader__hint 红字提示并排）<br>
+      有图态 .uploader-field--filled: 隐藏提示；.uploader 单行不换行 + overflow-x 横向滚动<br>
+      置于灰底 bg-1(#F2F3F5) | 单元格间距 8px<br><br>
+      <strong>单元格 .uploader__cell</strong><br>
+      尺寸: 72×72px（添加按钮 / 缩略图统一）<br><br>
+      <strong>添加按钮 .uploader__add</strong><br>
+      白底 + 1px dashed 边框 + 圆角 4px<br>
+      图标 24px: assets/icons/pic_gray_24px.svg<br>
+      文案 10px text-2: 空态「拍照/上传」，有图后「还能传N张」<br><br>
+      <strong>缩略图 .uploader__thumb-img</strong><br>
+      64×64px, radius 4px, object-fit cover, 顶部偏移 8px<br><br>
+      <strong>删除按钮 .uploader__del</strong><br>
+      20px, 右上角: assets/icons/pic_close.svg（深色半透明圆 + 白描边 + ×）<br><br>
+      <strong>提示 .uploader__hint</strong><br>
+      12px Medium danger-1(#EE0A24) | 必填/上限说明<br><br>
+      <strong>上限</strong>: 每个上传区最多 9 张，满则隐藏添加按钮
+    </div>
+  </section>
+</div>
+
+<script>
+  // 图片上传：空态显示红字提示；上传后隐藏提示并切换有图态，超出一行左右滚动。每个字段独立计数，最多 9 张
+  var UPLOAD_MAX = 9;
+  function thumbCount(field) { return field.querySelectorAll('.uploader__cell:not(.uploader__add)').length; }
+  function refreshField(field) {
+    var n = thumbCount(field);
+    var add = field.querySelector('.uploader__add');
+    field.classList.toggle('uploader-field--filled', n > 0);
+    if (add) {
+      var txt = add.querySelector('.uploader__add-text');
+      if (n >= UPLOAD_MAX) { add.style.display = 'none'; }
+      else { add.style.display = 'flex'; if (txt) txt.textContent = (n === 0) ? '拍照/上传' : ('还能传' + (UPLOAD_MAX - n) + '张'); }
+    }
+  }
+  function uploaderAdd(addEl) {
+    var field = addEl.closest('.uploader-field');
+    if (thumbCount(field) >= UPLOAD_MAX) return;
+    var row = field.querySelector('.uploader');
+    var cell = document.createElement('div');
+    cell.className = 'uploader__cell';
+    cell.innerHTML = '<div class="uploader__thumb-img" style="background:linear-gradient(135deg,#7FDCDA,#00AAA6);"></div>' +
+      '<span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span>';
+    row.appendChild(cell);
+    refreshField(field);
+  }
+  function uploaderDel(el) {
+    var field = el.closest('.uploader-field');
+    el.closest('.uploader__cell').remove();
+    refreshField(field);
+  }
+  document.querySelectorAll('.uploader-field').forEach(refreshField);
+</script>
+</body>
+</html>

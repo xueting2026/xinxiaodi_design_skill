@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 异常提报</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === Demo 手机框（375px 固定宽，浮层收敛到框内） === */
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 24px 0 48px;
+}
+#app {
+  width: 375px;
+  min-height: 812px;
+  background: var(--color-fill-2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* === 渐变顶部区 ===
+   Figma：0-216px，三个圆形装饰椭圆叠加，整体呈品牌浅绿渐变氛围。
+   这里用简化渐变还原整体色彩氛围，透明 demo-topbar 叠在上面。      */
+.page-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 375px;
+  height: 216px;
+  background:
+    radial-gradient(ellipse 336px 336px at 215px -80px, rgba(0,170,166,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 336px 336px at -15px -17px, rgba(0,170,166,0.13) 0%, transparent 70%),
+    linear-gradient(180deg, #D6F5F3 0%, #EBF9F8 55%, var(--color-fill-2) 100%);
+  pointer-events: none;
+}
+
+/* === demo-topbar 叠在渐变上 === */
+.demo-topbar {
+  position: relative;
+  z-index: 10;
+}
+
+/* === 功能标识区（大图标 + 标题） ===
+   Figma：icon y=148, h=48 → icon-center y=172；text y=208, h=24
+   距顶部（页面坐标）：icon top=148，text top=208
+   距 demo-topbar（88px）：icon margin-top=60px                       */
+.feature-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;   /* 148 - 88(顶栏) = 60px */
+  padding-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+.feature-identity__icon {
+  width: 48px;
+  height: 48px;
+}
+.feature-identity__title {
+  margin-top: 12px;   /* icon bottom=196, text top=208 → gap=12px */
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--color-text-1);
+  text-align: center;
+}
+
+/* === 底部 Home Indicator（demo 私有） === */
+.home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: #000;
+  border-radius: 999px;
+}
+
+/* 弹窗/面板蒙层收敛到 375px 手机框内（#app 相对定位，overflow:hidden） */
+#app .dialog-overlay,
+#app .sheet-overlay { position: absolute; left: 0; right: 0; width: auto; transform: none; }
+.menu-item { cursor: pointer; }
+
+/* === 异常提报表单弹窗（Figma 7532:86540，还原为弹窗，不作页面） === */
+#exform-dialog .dialog { width: 320px; padding: 20px 16px 16px; }
+.exform__info { background: var(--bg-1); border-radius: 8px; padding: 12px; margin: 12px 0 4px; }
+.exform__info-row { display: flex; }
+.exform__info-row + .exform__info-row { margin-top: 12px; }
+.exform__info-item { flex: 1; display: flex; gap: 8px; font-size: 14px; line-height: 20px; min-width: 0; }
+.exform__info-label { color: var(--text-2); flex-shrink: 0; }
+.exform__info-value { color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.exform__field { margin-top: 16px; }
+.exform__label { font-size: 14px; color: var(--text-3); line-height: 20px; margin-bottom: 8px; }
+.exform__select { height: 44px; border: 1px solid var(--border-2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; cursor: pointer; font-size: 14px; color: var(--text-1); }
+.exform__select--filled { color: var(--text-3); }
+.exform__textarea-wrap { position: relative; }
+.exform__textarea-wrap .textarea { min-height: 80px; }
+.exform__counter { position: absolute; right: 12px; bottom: 8px; font-size: 12px; color: var(--text-2); pointer-events: none; }
+.exform__submit { width: 100%; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 渐变背景层 -->
+  <div class="page-header"></div>
+
+  <!-- 顶部：状态栏 + 标题栏
+       底色为浅薄荷绿渐变 → 透明背景 + 深色字（--ink-dark） -->
+  <div class="demo-topbar">
+    <div class="statusbar statusbar--light statusbar--ink-dark">
+      <span class="statusbar__time">9:41</span>
+      <div class="statusbar__icons">
+        <img src="../assets/icons/bar_status_black.svg" height="12" alt="status icons" />
+      </div>
+    </div>
+    <div class="titlebar titlebar--transparent titlebar--ink-dark">
+      <button class="titlebar__back" aria-label="返回" onclick="location.href='demo-trailer.html'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="titlebar__title">异常提报</span>
+      <span class="titlebar__right titlebar__capsule">
+        <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp capsule" />
+      </span>
+    </div>
+  </div>
+
+  <!-- 功能标识区：大图标 + 标题 -->
+  <div class="feature-identity">
+    <img class="feature-identity__icon"
+         src="../assets/shortcuts/icon/home/driver/exception_report.svg"
+         alt="异常提报" />
+    <p class="feature-identity__title">异常提报</p>
+  </div>
+
+  <!-- 功能菜单列表（menu-item 组件） -->
+  <div class="menu-list">
+
+    <div class="menu-item" onclick="openException('返空柜')">
+      <div class="menu-item__left">
+        <img class="menu-item__icon"
+             src="../assets/icons/tuoche/fankonggui.svg"
+             alt="返空柜" />
+        <span class="menu-item__label">返空柜</span>
+      </div>
+      <img class="menu-item__arrow"
+           src="../assets/icons/select/right_line_black_16px.svg"
+           alt="" />
+    </div>
+
+    <div class="menu-item" onclick="openException('变更柜号')">
+      <div class="menu-item__left">
+        <img class="menu-item__icon"
+             src="../assets/icons/tuoche/fankonggui.svg"
+             alt="变更柜号" />
+        <span class="menu-item__label">变更柜号</span>
+      </div>
+      <img class="menu-item__arrow"
+           src="../assets/icons/select/right_line_black_16px.svg"
+           alt="" />
+    </div>
+
+    <div class="menu-item" onclick="openException('其他异常')">
+      <div class="menu-item__left">
+        <img class="menu-item__icon"
+             src="../assets/icons/tuoche/yichang.svg"
+             alt="其他异常" />
+        <span class="menu-item__label">其他异常</span>
+      </div>
+      <img class="menu-item__arrow"
+           src="../assets/icons/select/right_line_black_16px.svg"
+           alt="" />
+    </div>
+
+  </div>
+
+  <!-- 查询要提报的单号弹窗（复用 dialog 组件）；确定 → 异常提报表单弹窗 #exform-dialog -->
+  <div class="dialog-overlay" id="query-dialog">
+    <div class="dialog">
+      <div class="dialog__close" onclick="XUI.closeDialog('#query-dialog')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#86909C" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="dialog__title">请查询要提报的单号</div>
+      <div class="dialog__field" style="margin-top: 8px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="dialog__field-select dialog__field-select--filled" style="width: 96px; height: 40px; flex-shrink: 0;" onclick="XUI.openSheet('#danhao-sheet')">
+            <span id="danhao-value">运单号</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <input class="input" placeholder="请输入单号" style="flex: 1; height: 40px;" />
+        </div>
+      </div>
+      <div class="dialog__buttons">
+        <button class="btn btn--lg btn--light" style="width: auto;" onclick="XUI.closeDialog('#query-dialog')">取消</button>
+        <button class="btn btn--lg btn--primary" style="width: auto;" onclick="confirmQuery()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 选择单号类型面板（动作面板/列表选择） -->
+  <div class="sheet-overlay" id="danhao-sheet">
+    <div class="sheet">
+      <div class="sheet__header">
+        <span class="sheet__cancel" onclick="XUI.closeSheet('#danhao-sheet')">取消</span>
+        <span class="sheet__title">选择单号类型</span>
+        <span class="sheet__confirm" onclick="confirmDanhao()">确认</span>
+      </div>
+      <div class="sheet__body">
+        <div class="sheet__option sheet__option--selected">运单号</div>
+        <div class="sheet__option">订舱号</div>
+        <div class="sheet__option">调度单号</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 异常提报表单弹窗（Figma 7532:86540）：运单信息 + 拖车异常类型 + 备注 + 照片上传 + 提交 -->
+  <div class="dialog-overlay" id="exform-dialog">
+    <div class="dialog">
+      <div class="dialog__close" onclick="XUI.closeDialog('#exform-dialog')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="#86909C" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="dialog__title">异常提报</div>
+
+      <!-- 运单信息（只读，2 列） -->
+      <div class="exform__info">
+        <div class="exform__info-row">
+          <div class="exform__info-item"><span class="exform__info-label">运单号</span><span class="exform__info-value">THTM001</span></div>
+          <div class="exform__info-item"><span class="exform__info-label">提单号</span><span class="exform__info-value">THTM001</span></div>
+        </div>
+        <div class="exform__info-row">
+          <div class="exform__info-item"><span class="exform__info-label">调度单号</span><span class="exform__info-value">THTM001</span></div>
+          <div class="exform__info-item"><span class="exform__info-label">柜子类型</span><span class="exform__info-value">20GP</span></div>
+        </div>
+      </div>
+
+      <!-- 拖车异常类型 -->
+      <div class="exform__field">
+        <div class="exform__label">拖车异常类型</div>
+        <div class="exform__select" id="extype-select" onclick="XUI.openSheet('#extype-sheet')">
+          <span id="extype-value">请选择</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6L7 9L10 6" stroke="#C9CDD4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- 备注 -->
+      <div class="exform__field">
+        <div class="exform__label">备注</div>
+        <div class="exform__textarea-wrap">
+          <textarea class="textarea" id="note-input" maxlength="50" placeholder="请输入备注" oninput="onNoteInput(this)"></textarea>
+          <span class="exform__counter" id="note-counter">0/50</span>
+        </div>
+      </div>
+
+      <!-- 照片上传 -->
+      <div class="exform__field">
+        <div class="exform__label">照片上传</div>
+        <div class="uploader-field">
+          <div class="uploader">
+            <div class="uploader__cell uploader__add" onclick="uploaderAdd(this)">
+              <img src="../assets/icons/pic_gray_24px.svg" alt="">
+              <span class="uploader__add-text">拍照/上传</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn--lg btn--primary exform__submit" onclick="submitException()">提交</button>
+    </div>
+  </div>
+
+  <!-- 拖车异常类型选择面板（动作面板/列表选择） -->
+  <div class="sheet-overlay" id="extype-sheet">
+    <div class="sheet">
+      <div class="sheet__header">
+        <span class="sheet__cancel" onclick="XUI.closeSheet('#extype-sheet')">取消</span>
+        <span class="sheet__title">拖车异常类型</span>
+        <span class="sheet__confirm" onclick="confirmExType()">确认</span>
+      </div>
+      <div class="sheet__body">
+        <div class="sheet__option">返空柜</div>
+        <div class="sheet__option">变更柜号</div>
+        <div class="sheet__option">货物破损</div>
+        <div class="sheet__option">设备故障</div>
+        <div class="sheet__option">不可抗力异常</div>
+        <div class="sheet__option">其他</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 Home Indicator -->
+  <div class="home-indicator"></div>
+
+</div>
+<script src="../ui.js"></script>
+<script>
+// 记录当前点击的异常提报类型（返空柜/变更柜号/其他异常）
+var exType = '';
+// 点列表项 → 先弹「请查询要提报的单号」
+function openException(type) {
+  exType = type;
+  XUI.openDialog('#query-dialog');
+}
+// 查询确定 → 关闭查询弹窗，打开异常提报表单弹窗，并按入口预置拖车异常类型
+function confirmQuery() {
+  XUI.closeDialog('#query-dialog');
+  presetExType();
+  XUI.openDialog('#exform-dialog');
+}
+// 依据入口预置「拖车异常类型」：返空柜/变更柜号直接选中，其他异常留待手选
+function presetExType() {
+  var valEl = document.getElementById('extype-value');
+  var opts = document.querySelectorAll('#extype-sheet .sheet__option');
+  var preset = (exType === '返空柜' || exType === '变更柜号') ? exType : '';
+  if (preset) {
+    valEl.textContent = preset;
+    document.getElementById('extype-select').classList.add('exform__select--filled');
+  } else {
+    valEl.textContent = '请选择';
+    document.getElementById('extype-select').classList.remove('exform__select--filled');
+  }
+  opts.forEach(function (o) { o.classList.toggle('sheet__option--selected', o.textContent.trim() === preset); });
+}
+// 拖车异常类型：确认时回填
+function confirmExType() {
+  var sel = document.querySelector('#extype-sheet .sheet__option--selected');
+  if (sel) {
+    document.getElementById('extype-value').textContent = sel.textContent.trim();
+    document.getElementById('extype-select').classList.add('exform__select--filled');
+  }
+  XUI.closeSheet('#extype-sheet');
+}
+// 备注字数计数
+function onNoteInput(el) {
+  document.getElementById('note-counter').textContent = el.value.length + '/50';
+}
+// 提交：吐司提示后关闭弹窗
+function submitException() {
+  XUI.toast('提交成功');
+  XUI.closeDialog('#exform-dialog');
+}
+// 选单号类型：确认时回填选中项
+function confirmDanhao() {
+  var sel = document.querySelector('#danhao-sheet .sheet__option--selected');
+  if (sel) document.getElementById('danhao-value').textContent = sel.textContent.trim();
+  XUI.closeSheet('#danhao-sheet');
+}
+
+// 图片上传：拍照/上传后追加缩略图，最多 9 张
+var UPLOAD_MAX = 9;
+function thumbCount(field) { return field.querySelectorAll('.uploader__cell:not(.uploader__add)').length; }
+function refreshField(field) {
+  var n = thumbCount(field);
+  var add = field.querySelector('.uploader__add');
+  field.classList.toggle('uploader-field--filled', n > 0);
+  if (add) {
+    var txt = add.querySelector('.uploader__add-text');
+    if (n >= UPLOAD_MAX) { add.style.display = 'none'; }
+    else { add.style.display = 'flex'; if (txt) txt.textContent = (n === 0) ? '拍照/上传' : ('还能传' + (UPLOAD_MAX - n) + '张'); }
+  }
+}
+function uploaderAdd(addEl) {
+  var field = addEl.closest('.uploader-field');
+  if (thumbCount(field) >= UPLOAD_MAX) return;
+  var row = field.querySelector('.uploader');
+  var cell = document.createElement('div');
+  cell.className = 'uploader__cell';
+  cell.innerHTML = '<div class="uploader__thumb-img" style="background:linear-gradient(135deg,#7FDCDA,#00AAA6);"></div>' +
+    '<span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span>';
+  row.appendChild(cell);
+  refreshField(field);
+}
+function uploaderDel(el) {
+  var field = el.closest('.uploader-field');
+  el.closest('.uploader__cell').remove();
+  refreshField(field);
+}
+</script>
+</body>
+</html>

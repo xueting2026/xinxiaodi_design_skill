@@ -887,7 +887,7 @@
         </div>
         <div class="catalog-card__body">
           <div class="catalog-card__name">搜索框 SearchBox <span class="arr">→</span></div>
-          <div class="catalog-card__desc">默认/有筛选/多项筛选 + 清除/下拉交互</div>
+          <div class="catalog-card__desc">默认/有筛选/多项筛选/拍照获取 + 清除/下拉交互</div>
         </div>
       </a>
 
@@ -944,6 +944,54 @@
         </div>
       </a>
 
+      <a class="catalog-card" href="preview/component-menu-item.html">
+        <div class="catalog-thumb">
+          <div class="menu-item" style="width:180px;border:1px solid #F2F3F5;">
+            <div class="menu-item__left">
+              <img class="menu-item__icon" src="assets/icons/tuoche/fankonggui.svg" alt="返空柜">
+              <span class="menu-item__label">返空柜</span>
+            </div>
+            <img class="menu-item__arrow" src="assets/icons/select/right_line_black_16px.svg" alt="">
+          </div>
+        </div>
+        <div class="catalog-card__body">
+          <div class="catalog-card__name">菜单列表项 Menu Item <span class="arr">→</span></div>
+          <div class="catalog-card__desc">通用导航页纵向入口行：图标 + 文字 + 右箭头</div>
+        </div>
+      </a>
+
+      <a class="catalog-card" href="preview/component-uploader.html">
+        <div class="catalog-thumb">
+          <div style="display:flex; gap:8px;">
+            <div class="uploader__cell uploader__add"><img src="assets/icons/pic_gray_24px.svg" alt=""><span class="uploader__add-text">拍照/上传</span></div>
+            <div class="uploader__cell"><div class="uploader__thumb-img" style="background:linear-gradient(135deg,#7FDCDA,#00AAA6);"></div><span class="uploader__del"><img src="assets/icons/pic_close.svg" alt=""></span></div>
+          </div>
+        </div>
+        <div class="catalog-card__body">
+          <div class="catalog-card__name">图片上传 Image Upload <span class="arr">→</span></div>
+          <div class="catalog-card__desc">拍照/上传，72×72 添加按钮 + 缩略图删除，每区最多 9 张</div>
+        </div>
+      </a>
+
+      <a class="catalog-card" href="preview/component-sheet.html">
+        <div class="catalog-thumb">
+          <div class="mini-frame" style="width:170px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-bottom:.5px solid #E5E6EB;">
+              <span style="font-size:10px; color:#86909C;">取消</span>
+              <span style="font-size:11px; font-weight:600; color:#1D2129;">选择标题</span>
+              <span style="font-size:10px; color:#00AAA6;">确认</span>
+            </div>
+            <div style="padding:6px 10px; font-size:10px; color:#1D2129;">选项一</div>
+            <div style="padding:6px 10px; font-size:10px; color:#00AAA6;">选项二（选中）</div>
+            <div style="padding:6px 10px; font-size:10px; color:#1D2129;">选项三</div>
+          </div>
+        </div>
+        <div class="catalog-card__body">
+          <div class="catalog-card__name">弹出面板 Sheet <span class="arr">→</span></div>
+          <div class="catalog-card__desc">底部上滑面板：动作面板/选择器/时间选择，取消·标题·确认，最高536px滚动</div>
+        </div>
+      </a>
+
     </div>
   </section>
 
@@ -992,6 +1040,7 @@
       <div class="icon-cell"><img src="assets/icons/close_gray_24px.svg" alt="close"><div class="icon-cell__name">close_gray_24px</div></div>
       <div class="icon-cell"><img src="assets/icons/close_gray_16px.svg" alt="close_16"><div class="icon-cell__name">close_gray_16px</div></div>
       <div class="icon-cell"><img src="assets/icons/close_gray_full_16px.svg" alt="close_full"><div class="icon-cell__name">close_gray_full_16px</div></div>
+      <div class="icon-cell" style="background:#4E5969;"><img src="assets/icons/pic_close.svg" alt="pic_close"><div class="icon-cell__name" style="color:#C9CDD4;">pic_close</div></div>
       <div class="icon-cell"><img src="assets/icons/copy_16px.svg" alt="copy"><div class="icon-cell__name">copy_16px</div></div>
       <div class="icon-cell"><img src="assets/icons/copy_green__16px.svg" alt="copy_green"><div class="icon-cell__name">copy_green__16px</div></div>
       <div class="icon-cell"><img src="assets/icons/position_green_16px.svg" alt="position"><div class="icon-cell__name">position_green_16px</div></div>
@@ -1030,17 +1079,9 @@
         <div class="page-type-card__name">🏠 首页</div>
         <div class="page-type-card__desc">概览待办任务，快速跳转各业务模块</div>
       </a>
-      <a class="page-type-card" href="Design.md">
-        <div class="page-type-card__name">🧩 功能选择页</div>
-        <div class="page-type-card__desc">子功能≥3个时作为二级入口集合（规范见 Design.md）</div>
-      </a>
       <a class="page-type-card" href="examples/demo-list.html">
         <div class="page-type-card__name">📋 列表页</div>
         <div class="page-type-card__desc">同类任务集合，筛选/搜索/批量操作（最核心）</div>
-      </a>
-      <a class="page-type-card" href="Design.md">
-        <div class="page-type-card__name">✏️ 操作页</div>
-        <div class="page-type-card__desc">针对特定对象录入信息并确认提交（规范见 Design.md）</div>
       </a>
       <a class="page-type-card" href="preview/component-dialog.html">
         <div class="page-type-card__name">💬 弹窗/面板</div>
@@ -1072,8 +1113,14 @@
         <tr>
           <td>运单卡片</td>
           <td>列表页</td>
-          <td>待到库、待提货、待发运、待打卡、待派送、待运抵、待签收</td>
+          <td>待到库、待提货（含待发运 Tab）、待打卡、待派送、待运抵、待签收、待办中心</td>
           <td>各模块字段差异见 card.json</td>
+        </tr>
+        <tr>
+          <td>拖车业务卡片</td>
+          <td>列表页</td>
+          <td>提柜、入园、落柜、提重柜、离园、过磅、返重柜、改约</td>
+          <td>三层结构；逐页字段见 card.json.pageFieldConfig，效果见 preview/component-card.html</td>
         </tr>
         <tr>
           <td>物流信息卡片</td>
@@ -1084,8 +1131,8 @@
         <tr>
           <td>签收管理卡片</td>
           <td>操作页</td>
-          <td>待签收</td>
-          <td>含图片上传和拒收原因选择</td>
+          <td>待签收下的整单签收、整单拒收、回单上传</td>
+          <td>含签单/回单图片上传(uploader)和拒收原因选择(sheet 动作面板)</td>
         </tr>
       </tbody>
     </table>

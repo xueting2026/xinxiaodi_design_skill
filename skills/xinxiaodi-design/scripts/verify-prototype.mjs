@@ -19,7 +19,7 @@
  *                    默认 references（= skill 内的设计系统目录）
  *
  * 示例：
- *   node skills/xinxiaodi-design/scripts/verify-prototype.mjs /abs/path/foo.html
+ *   node .kiro/skills/xinxiaodi-design/scripts/verify-prototype.mjs /abs/path/foo.html
  *   node scripts/verify-prototype.mjs foo.html --ds /abs/path/to/references
  *
  * 说明：

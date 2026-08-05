@@ -30,8 +30,10 @@
   },
   "specs": {
     "overlay": {
-      "backgroundColor": "rgba(0,0,0,0.5)",
-      "backdropFilter": "blur(2px)"
+      "backgroundColor": "rgba(0,0,0,0.6)",
+      "$backgroundNote": "遮罩色 #000000 透明度 60%",
+      "backdropFilter": "blur(2px)",
+      "width": "限制在页面宽度内（设计宽度 375px，居中），不铺满整个浏览器视口；交付移动端 max-width:100%"
     },
     "container": {
       "width": "320px",
@@ -87,11 +89,13 @@
       "lineHeight": "22px"
     },
     "form-field": {
+      "layout": "上下布局：title(.dialog__field-label) 在上，输入框/选择框在下（不用左右内联）。输入用 .input，选择用 .dialog__field-select。",
       "label": {
         "fontSize": "14px",
         "color": "#1D2129",
         "marginBottom": "8px",
-        "required-marker": "* #EE0A24"
+        "required-marker": "* #EE0A24",
+        "position": "位于输入/选择控件上方（上下布局）"
       },
       "select": {
         "height": "32px",
@@ -141,7 +145,9 @@
     "按钮顺序：浅色(次要)在左，深色(主操作)在右",
     "关闭按钮始终在右上角(top 8, right 8)",
     "表单弹窗：必填项用红色 * 标记，全部填写后提交按钮激活",
-    "蒙层使用 rgba(0,0,0,0.5) 半透明黑色",
+    "表单字段（输入/选择）统一上下布局：title 在上、输入/选择框在下，不用左右内联",
+    "遮罩色 #000000 透明度 60%（rgba(0,0,0,0.6)）",
+    "遮罩限制在页面宽度内（375px 居中），不铺满整个浏览器视口",
     "弹窗用于轻量操作（≤2步），复杂操作应用独立页面"
   ],
   "doNotInvent": [
@@ -158,7 +164,7 @@
     { "scenario": "表单填写", "variant": "表单-运单发运", "when": "轻量表单录入（≤2步），必填项填完后主按钮激活" }
   ],
   "states": [
-    { "state": "hidden", "trigger": "默认关闭", "class": "dialog-overlay（opacity 0，dialog scale 0.9）" },
+    { "state": "hidden", "trigger": "默认关闭", "class": "dialog-overlay（display:none，不拦截点击；opacity 0 / dialog scale 0.9 备用于淡入）" },
     { "state": "visible", "trigger": "打开弹窗", "class": "dialog-overlay--visible（opacity 1，dialog scale 1）" },
     { "state": "field-filled", "trigger": "表单必填项已填", "class": "dialog__field-select--filled（边框 vi-2，提交按钮激活）" }
   ],

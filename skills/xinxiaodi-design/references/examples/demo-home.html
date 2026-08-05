@@ -86,6 +86,11 @@ body > * {
 .grid-dots .dot { width: 4px; height: 4px; border-radius: 50%; background: #E5E6EB; }
 .grid-dots .dot.active { width: 12px; border-radius: 2px; background: #00AAA6; }
 
+/* 金刚区左右滑动 */
+.grid-scroll { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.grid-scroll::-webkit-scrollbar { display: none; }
+.grid-page { flex: 0 0 100%; scroll-snap-align: start; }
+
 .section-title { font-size: 14px; font-weight: 600; color: #1D2129; margin-bottom: 12px; }
 
 /* 运单卡片容器统一用组件库 .card 类；首页任务区内嵌于 .content，
@@ -159,19 +164,30 @@ body > * {
     </div>
   </div>
 
-  <!-- Function Grid -->
+  <!-- Function Grid（可左右滑动，第一页待办入口 + 第二页拖车业务） -->
   <div class="function-grid">
-    <div class="grid-row">
-      <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/daoku.svg" /></div><span class="grid-label">待到库</span></div>
-      <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/tihuo.svg" /></div><span class="grid-label">待提货</span></div>
-      <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/daka.svg" /></div><span class="grid-label">待打卡</span></div>
-      <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/paisong.svg" /></div><span class="grid-label">待派送</span></div>
-    </div>
-    <div class="grid-row">
-      <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/yundi.svg" /></div><span class="grid-label">待运抵</span></div>
-      <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/qianshou.svg" /></div><span class="grid-label">待签收</span></div>
-      <div class="grid-item"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/huidan.svg" /></div><span class="grid-label">回单上传</span></div>
-      <div class="grid-item"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/jiaojie.svg" /></div><span class="grid-label">送货交接</span></div>
+    <div class="grid-scroll" id="gridScroll">
+      <!-- 第一页：待办入口 -->
+      <div class="grid-page">
+        <div class="grid-row">
+          <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/daoku.svg" /></div><span class="grid-label">待到库</span></div>
+          <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/tihuo.svg" /></div><span class="grid-label">待提货</span></div>
+          <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/daka.svg" /></div><span class="grid-label">待打卡</span></div>
+          <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/paisong.svg" /></div><span class="grid-label">待派送</span></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/yundi.svg" /></div><span class="grid-label">待运抵</span></div>
+          <div class="grid-item" onclick="navigateToList()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/qianshou.svg" /></div><span class="grid-label">待签收</span></div>
+          <div class="grid-item"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/huidan.svg" /></div><span class="grid-label">回单上传</span></div>
+          <div class="grid-item"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/jiaojie.svg" /></div><span class="grid-label">送货交接</span></div>
+        </div>
+      </div>
+      <!-- 第二页：拖车业务 -->
+      <div class="grid-page">
+        <div class="grid-row" style="justify-content: flex-start; padding-left: 12px;">
+          <div class="grid-item" onclick="navigateToTrailer()" style="cursor: pointer;"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/driver/tuoche.svg" /></div><span class="grid-label">拖车业务</span></div>
+        </div>
+      </div>
     </div>
     <div class="grid-dots"><span class="dot active"></span><span class="dot"></span></div>
   </div>
@@ -248,10 +264,30 @@ function navigateToList() {
   }
 }
 
+// 跳转拖车业务功能选择页
+function navigateToTrailer() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'page-trailer' }, '*');
+  } else {
+    window.location.href = 'demo-trailer.html';
+  }
+}
+
 // 返回首页第一屏（平滑滚动到顶部）
 function backToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// 金刚区左右滑动 → dots 联动
+(function() {
+  var scroll = document.getElementById('gridScroll');
+  var dots = document.querySelectorAll('.grid-dots .dot');
+  if (!scroll) return;
+  scroll.addEventListener('scroll', function() {
+    var page = Math.round(scroll.scrollLeft / scroll.offsetWidth);
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === page); });
+  });
+})();
 </script>
 
 </body>

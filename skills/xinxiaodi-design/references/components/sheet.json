@@ -1,0 +1,104 @@
+{
+  "slug": "sheet",
+  "name": "弹出面板 Sheet（动作面板/选择器/时间选择）",
+  "schemaVersion": 1,
+  "figmaNode": "7813:46378 (动作面板/列表选择), 793:15136 (选择器·滚轮), 869:14648 (时间选择·滚轮)",
+  "description": "表单级底部上滑面板。60% 遮罩（限页面宽度）+ 顶部圆角面板，头部左『取消』/ 中『标题』/ 右『确认』，内容区最高 536px 超出滚动。三种内容变体：动作面板(列表单选) / 选择器(单列滚轮) / 时间选择(多列滚轮)。用于表单级选择、时间录入等，替代原临时下拉。",
+  "variantDimensions": [
+    {
+      "axis": "content",
+      "values": ["动作面板(列表选择)", "选择器(单列滚轮)", "时间选择(多列滚轮)"]
+    }
+  ],
+  "representativeVariants": ["action-list", "picker-wheel", "time-picker"],
+  "anatomy": {
+    "parts": [
+      "overlay(.sheet-overlay：60% 遮罩，底部对齐，限页面宽度)",
+      "panel(.sheet：白底，顶部 16px 圆角，max-height 536px)",
+      "header(.sheet__header：.sheet__cancel 取消 / .sheet__title 标题 / .sheet__confirm 确认)",
+      "body(.sheet__body：可滚动内容区)",
+      "list-content(.sheet__option / .sheet__option--selected)",
+      "wheel-content(.sheet__wheel + .sheet__wheel-band + .sheet__wheel-col + .sheet__wheel-item/--active)"
+    ],
+    "required": ["overlay", "panel", "header", "body"]
+  },
+  "specs": {
+    "overlay": {
+      "background": "rgba(0,0,0,0.6)（#000000 60%）",
+      "align": "flex-end（面板贴底上滑）",
+      "width": "限页面宽度（375px 居中，max-width:100%），默认 display:none 不拦截点击",
+      "animation": "opacity 0→1 + 面板 translateY(100%)→0"
+    },
+    "panel": {
+      "background": "#FFFFFF",
+      "radius": "16px 16px 0 0",
+      "maxHeight": "536px（超出由 .sheet__body 滚动）",
+      "paddingBottom": "env(safe-area-inset-bottom)"
+    },
+    "header": {
+      "height": "52px",
+      "layout": "space-between，padding 0 16px",
+      "cancel": "『取消』左，14px，color-text-2",
+      "title": "标题居中，16px Semibold，color-text-1",
+      "confirm": "『确认』右，14px，brand vi-2(#00AAA6)"
+    },
+    "body": { "flex": 1, "overflowY": "auto", "note": "受 panel 536px 上限约束，超出滚动" },
+    "list-option": {
+      "height": "48px",
+      "padding": "0 16px",
+      "fontSize": "16px",
+      "color": "#1D2129",
+      "divider": "0.5px color-border-1（最后一项无）",
+      "selected": ".sheet__option--selected 文字 vi-2(#00AAA6)"
+    },
+    "wheel": {
+      "area": "高 220px，中间 44px 选中带(.sheet__wheel-band 上下 0.5px 细线)",
+      "column": ".sheet__wheel-col：overflow-y auto + scroll-snap-y，padding 88px 0（首末项可居中），可多列（时间=时/分两列）",
+      "item": ".sheet__wheel-item 高 44px，字号 16px；中心项 .sheet__wheel-item--active 文字 color-text-1 加粗，其余 color-text-4",
+      "value": "选中值存于 col.dataset.value（居中项文本）"
+    }
+  },
+  "interaction": {
+    "open": "XUI.openSheet('#id')（面板上滑 + 遮罩淡入）",
+    "close": "XUI.closeSheet('#id')；取消/确认/点遮罩/Esc 均关闭",
+    "list-select": "点 .sheet__option 单选高亮（XUI.initSheetOptions）",
+    "wheel": "滚动吸附居中 + 中心项高亮（XUI.initWheel），确认时读取各列 col.dataset.value",
+    "confirm": "『确认』收集选中值（列表用 .sheet__option--selected，滚轮用各列 dataset.value）后回填触发控件并关闭；『取消』直接关闭不回填"
+  },
+  "usageHints": [
+    "三种变体共用同一 .sheet 骨架（遮罩 + 头部取消/标题/确认 + 可滚动内容区），最高 536px 超出滚动",
+    "动作面板：body 放 .sheet__option 列表（单选，选中 vi-2）；选项过多时列表滚动",
+    "选择器：body 放单列 .sheet__wheel（滚轮居中选择）",
+    "时间选择：body 放多列 .sheet__wheel（如 时/分 两列）",
+    "遮罩 #000000 60% 且限页面宽度（375 居中）；#app 手机框内加 #app .sheet-overlay{position:absolute} 收敛",
+    "取消=color-text-2，标题=color-text-1 16px Semibold，确认=brand vi-2",
+    "表单里作为『选择/时间』控件的弹出层：点击触发控件(如 .dialog__field-select) → XUI.openSheet 打开对应面板"
+  ],
+  "doNotInvent": [
+    "居中弹窗式选择器（选择/时间用底部上滑面板，不用居中 dialog）",
+    "面板高度超过 536px（超出应滚动）",
+    "头部按钮换色/换位（固定 左取消 中标题 右确认）",
+    "无遮罩或全屏遮罩（遮罩 60% 且限页面宽度）"
+  ],
+  "usageScenarios": [
+    { "scenario": "拖车异常类型选择", "variant": "action-list", "when": "异常提报表单点『拖车异常类型』→ 弹出列表（不可抗力异常/设备故障/货物破损/装卸异常/其他）单选回填" },
+    { "scenario": "拒收原因选择", "variant": "action-list", "when": "签收管理卡片点『拒收原因』→ 弹出原因列表单选" },
+    { "scenario": "筛选维度/单号类型选择", "variant": "action-list", "when": "查询时选维度（运单号/订舱号/调度单号）等选项少且带文字的场景" },
+    { "scenario": "『更多操作』动作列表", "variant": "action-list", "when": "卡片底部操作超出按钮组上限时，点『更多』弹出动作列表（整单拒收/异常提报/联系客服等）" },
+    { "scenario": "柜子类型选择", "variant": "picker-wheel", "when": "单列滚轮选柜子类型（20GP/40HQ/40GP/45HQ…）" },
+    { "scenario": "装货点顺序/档位/数量", "variant": "picker-wheel", "when": "连续数值或较多枚举值的单列滚轮快速定位" },
+    { "scenario": "单号类型(值多时)", "variant": "picker-wheel", "when": "单号类型值多时用单列滚轮（值少时改用动作面板列表）" },
+    { "scenario": "预约/改约时间段", "variant": "time-picker", "when": "入园改约选『起—止』时间（时:分 两列，或两个时间选择）" },
+    { "scenario": "要求装货时间/预约入园时间", "variant": "time-picker", "when": "录入具体时间点（可含 日期列 + 时/分列）" },
+    { "scenario": "过磅/操作时间", "variant": "time-picker", "when": "需精确到时分的时间录入" }
+  ],
+  "variantSelection": "选型区分：选项少（约 ≤7）且带描述文字 → 动作面板列表(action-list)；值多/有序/纯枚举、需快速滚动定位 → 选择器滚轮(picker-wheel)；时间(时/分)或多维联动 → 时间选择(time-picker)。",
+  "states": [
+    { "state": "hidden", "trigger": "默认关闭", "class": ".sheet-overlay（display:none，不拦截点击）" },
+    { "state": "visible", "trigger": "打开", "class": ".sheet-overlay--visible（遮罩淡入 + 面板上滑）" },
+    { "state": "option-selected", "trigger": "列表单选", "class": ".sheet__option--selected（文字 vi-2）" },
+    { "state": "wheel-active", "trigger": "滚轮居中项", "class": ".sheet__wheel-item--active（居中高亮）" }
+  ],
+  "cssClasses": ["sheet-overlay", "sheet-overlay--visible", "sheet", "sheet__header", "sheet__cancel", "sheet__title", "sheet__confirm", "sheet__body", "sheet__option", "sheet__option--selected", "sheet__wheel", "sheet__wheel-band", "sheet__wheel-col", "sheet__wheel-item", "sheet__wheel-item--active"],
+  "exampleRefs": ["preview/component-sheet.html"]
+}

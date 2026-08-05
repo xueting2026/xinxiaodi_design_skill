@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 拖车业务详情页（提柜）</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
+.page-sticky { position: sticky; top: 0; z-index: 50; }
+.detail-scroll { flex: 1; }
+/* 本 demo：底部操作栏透明（提交按钮直接坐在页面背景上，无白底栏） */
+.action-bar { background: transparent; border-top: none; box-shadow: none; }
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏 -->
+<div class="demo-topbar page-sticky">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_black.svg" height="12" alt="status" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="location.href='demo-trailer-tigui.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="titlebar__title">提柜</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp" />
+    </span>
+  </div>
+</div>
+
+<!-- 定位栏 -->
+<div class="location-bar">
+  <img src="../assets/icons/position_green_16px.svg" class="location-bar__icon" width="16" height="16" />
+  <span class="location-bar__address" style="flex:1;">山东省青岛市市南区江西路11号山东省青岛市市南区</span>
+</div>
+
+<div class="detail-scroll">
+  <!-- 拖车业务卡片（详情页版本：字段下方新增 拍照获取搜索框 + 图片上传组件） -->
+  <div style="padding: 8px 16px 12px;">
+    <div class="card card--trailer">
+      <!-- 场站信息 -->
+      <div class="card__location">
+        <div class="card__location-row">
+          <span class="tag tag--orange">提柜点</span>
+          <span class="card__addr card__addr--wrap">江苏省淮安市淮阴区新渡口街道人民路新渡口街道人民路新渡口街道人民路166号7号楼2单元704户</span>
+        </div>
+      </div>
+      <div class="card__divider card__divider--full"></div>
+      <!-- 调度单信息 -->
+      <div class="card__dispatch">
+        <div class="card__dispatch-row">
+          <span class="card__dispatch-plate">D22110100291</span>
+          <span class="card__dispatch-time">下达时间：2022/11/16 18:00</span>
+        </div>
+      </div>
+      <!-- 运单小卡片（详情版：字段 + 拍照获取 + 上传） -->
+      <div class="card__waybill">
+        <div class="card__order">
+          <div class="card__order-top">
+            <span class="card__waybill-label">运单号</span>
+            <span class="card__order-sap">HECPX1233313131313545</span>
+          </div>
+          <div class="card__order-body">
+            <!-- 运单信息字段 -->
+            <div class="card__grid">
+              <div class="card__grid-item"><span class="card__grid-label">提单号</span><span class="card__grid-value">THTM001</span></div>
+              <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+              <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">20GP</span></div>
+            </div>
+            <!-- 拍照获取搜索框（searchbox 变体） -->
+            <div class="searchbox" style="margin-top: 12px;">
+              <input class="searchbox__input" id="detail-cabinet-input" type="text" placeholder="请输入柜号或拍照获取">
+              <div class="searchbox__query" onclick="photoCaptureFill()"><span class="searchbox__query-text">拍照获取</span></div>
+            </div>
+            <!-- 图片上传组件 1：集装箱号照片 -->
+            <div class="uploader-field" style="margin-top: 12px;">
+              <div class="uploader">
+                <div class="uploader__cell uploader__add" onclick="uploaderAdd(this)">
+                  <img src="../assets/icons/pic_gray_24px.svg" alt="">
+                  <span class="uploader__add-text">拍照/上传</span>
+                </div>
+              </div>
+              <div class="uploader__hint">（必填）请上传【集装箱号照片】！，每个上传图片区域的照片最多允许上传 9 张</div>
+            </div>
+            <!-- 图片上传组件 2：柜号照片 -->
+            <div class="uploader-field" style="margin-top: 8px;">
+              <div class="uploader">
+                <div class="uploader__cell uploader__add" onclick="uploaderAdd(this)">
+                  <img src="../assets/icons/pic_gray_24px.svg" alt="">
+                  <span class="uploader__add-text">拍照/上传</span>
+                </div>
+              </div>
+              <div class="uploader__hint">（必填）请上传【柜号照片】！，每个上传图片区域的照片最多允许上传 9 张</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部固定操作栏 -->
+<div class="action-bar">
+  <button class="btn btn--lg btn--primary" onclick="submitTigui()">提交</button>
+</div>
+
+<script src="../ui.js"></script>
+<script>
+// 提交：吐司提示后返回提柜列表
+function submitTigui() {
+  XUI.toast('提柜成功');
+  setTimeout(function () { location.href = 'demo-trailer-tigui.html'; }, 1200);
+}
+// 拍照获取：点击「拍照获取」演示 OCR 回填柜号
+function photoCaptureFill() {
+  var i = document.getElementById('detail-cabinet-input');
+  if (i) i.value = 'CBHU1234567';
+}
+// 图片上传：空态显示红字提示；上传后隐藏提示并切换有图态，超出一行左右滚动。每个字段独立计数，最多 9 张
+var UPLOAD_MAX = 9;
+function thumbCount(field) { return field.querySelectorAll('.uploader__cell:not(.uploader__add)').length; }
+function refreshField(field) {
+  var n = thumbCount(field);
+  var add = field.querySelector('.uploader__add');
+  field.classList.toggle('uploader-field--filled', n > 0);
+  if (add) {
+    var txt = add.querySelector('.uploader__add-text');
+    if (n >= UPLOAD_MAX) { add.style.display = 'none'; }
+    else { add.style.display = 'flex'; if (txt) txt.textContent = (n === 0) ? '拍照/上传' : ('还能传' + (UPLOAD_MAX - n) + '张'); }
+  }
+}
+function uploaderAdd(addEl) {
+  var field = addEl.closest('.uploader-field');
+  if (thumbCount(field) >= UPLOAD_MAX) return;
+  var row = field.querySelector('.uploader');
+  var cell = document.createElement('div');
+  cell.className = 'uploader__cell';
+  cell.innerHTML = '<div class="uploader__thumb-img" style="background:linear-gradient(135deg,#7FDCDA,#00AAA6);"></div>' +
+    '<span class="uploader__del" onclick="uploaderDel(this)"><img src="../assets/icons/pic_close.svg" alt="删除"></span>';
+  row.appendChild(cell);
+  refreshField(field);
+}
+function uploaderDel(el) {
+  var field = el.closest('.uploader-field');
+  el.closest('.uploader__cell').remove();
+  refreshField(field);
+}
+document.querySelectorAll('.uploader-field').forEach(refreshField);
+</script>
+</body>
+</html>

@@ -64,6 +64,7 @@
   <a class="sidebar__link" href="#sec-basic">默认搜索框</a>
   <a class="sidebar__link" href="#sec-filter">有筛选搜索框</a>
   <a class="sidebar__link" href="#sec-multi">多项筛选</a>
+  <a class="sidebar__link" href="#sec-photo">拍照获取</a>
   <a class="sidebar__link" href="#sec-clear">清除交互</a>
   <a class="sidebar__link" href="#sec-dropdown">筛选下拉</a>
   <a class="sidebar__link" href="#sec-spec">规格说明</a>
@@ -162,6 +163,23 @@
     </div>
   </section>
 
+  <!-- 拍照获取搜索框 -->
+  <section class="preview-section" id="sec-photo">
+    <div class="preview-title">拍照获取搜索框</div>
+    <div class="preview-desc">Figma 7532:87225 · searchbox 变体：无左侧搜索图标，查询按钮文案改为「拍照获取」。用于按柜号检索——手动输入柜号，或点「拍照获取」拍照 OCR 识别柜号后回填。</div>
+    <div class="preview-group">
+      <div class="search-demo-wrap">
+        <div class="searchbox">
+          <input class="searchbox__input" id="sb-photo-input" type="text" placeholder="请输入柜号或拍照获取">
+          <div class="searchbox__query" onclick="photoCaptureFill()">
+            <span class="searchbox__query-text">拍照获取</span>
+          </div>
+        </div>
+      </div>
+      <div class="preview-label">点击「拍照获取」演示 OCR 回填柜号（CBHU1234567）；复用 .searchbox / .searchbox__query，无新增 class</div>
+    </div>
+  </section>
+
   <!-- 清除按钮交互 -->
   <section class="preview-section" id="sec-clear">
     <div class="preview-title">清除按钮交互</div>
@@ -246,5 +264,12 @@
 </div>
 
 <script src="../ui.js"></script>
+<script>
+  // 拍照获取搜索框：点击「拍照获取」演示 OCR 回填柜号
+  function photoCaptureFill() {
+    var i = document.getElementById('sb-photo-input');
+    if (i) i.value = 'CBHU1234567';
+  }
+</script>
 </body>
 </html>

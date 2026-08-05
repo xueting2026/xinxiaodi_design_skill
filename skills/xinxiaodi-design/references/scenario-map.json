@@ -32,6 +32,30 @@
       "notes": "列表页的具体业务实例（待到库），可直接作为同型列表的复用底板。"
     },
     {
+      "id": "demo-trailer-detail",
+      "file": "examples/demo-trailer-detail.html",
+      "pageType": "操作页",
+      "coversScenarios": ["拖车业务详情/操作页", "提柜录入", "拍照获取柜号", "图片上传(集装箱号/柜号照片)", "底部固定提交栏"],
+      "composedOf": ["statusbar-titlebar", "navigation", "card", "searchbox", "uploader", "button"],
+      "notes": "拖车业务详情页模板。拖车业务卡片·详情版（.card--trailer）在 .card__order-body 字段下追加拍照获取搜索框 + 图片上传组件；底部 .action-bar + .btn--lg 提交。完全复用已有组件。"
+    },
+    {
+      "id": "demo-trailer-weighing",
+      "file": "examples/demo-trailer-weighing.html",
+      "pageType": "列表页",
+      "coversScenarios": ["过磅列表", "过磅登记弹窗", "拖车业务卡片(无场站头)", "轻量表单弹窗"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "dialog", "input", "button"],
+      "notes": "过磅列表页 + 过磅登记弹窗。点卡片『过磅登记』按钮(XUI.openDialog)弹出过磅登记 dialog（过磅重量 input + KG 单位 + 提交）。卡片为拖车业务卡片·过磅版(无场站头)。"
+    },
+    {
+      "id": "demo-trailer-reschedule",
+      "file": "examples/demo-trailer-reschedule.html",
+      "pageType": "列表页",
+      "coversScenarios": ["改约列表", "入园改约弹窗", "只读展示字段", "时间段选择(起—止)", "轻量表单弹窗"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "dialog", "input", "button"],
+      "notes": "改约列表页 + 入园改约弹窗。点卡片『改约』按钮(XUI.openDialog)弹出入园改约 dialog：预约入园日期(只读 input) + 预约时间段(两个 .dialog__field-select 起—止) + 提交。表单字段上下布局。"
+    },
+    {
       "id": "login",
       "file": "examples/login.html",
       "pageType": "登录页",
@@ -46,6 +70,78 @@
       "coversScenarios": ["组件动态交互", "底部弹出面板", "选择器", "弹窗"],
       "composedOf": ["dialog", "selector", "tab", "button"],
       "notes": "交互行为参考（面板开合、选择器、弹窗）。"
+    },
+    {
+      "id": "demo-trailer",
+      "file": "examples/demo-trailer.html",
+      "pageType": "功能选择页",
+      "coversScenarios": ["拖车业务子功能入口", "功能球网格", "二级页面定位", "返回导航"],
+      "composedOf": ["statusbar-titlebar", "navigation"],
+      "notes": "拖车业务功能选择页标准成品。12 个子功能球（派车/过磅/提柜/落柜/入院/离院/提重柜/反重柜/换车接单/改约/业务监控/异常提报），图标来自 assets/icons/tuoche/（中文拼音命名）。功能球点击直接 location.href 进入对应列表页；换车接单/业务监控/派车为管理端功能，driver demo 中点『换车接单』→ XUI.toast 占位。"
+    },
+    {
+      "id": "demo-trailer-tigui",
+      "file": "examples/demo-trailer-tigui.html",
+      "pageType": "列表页",
+      "coversScenarios": ["提柜列表", "三层结构(提柜点→调度单→运单)", "搜索+查询项筛选", "每运单一个提柜按钮"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "button"],
+      "notes": "提柜列表页。拖车业务卡片(.card--trailer)每个运单小卡片带 .card__waybill-actions『提柜』按钮 → demo-trailer-detail.html。长字段(100%)：首个装货点/月台信息/要求装货时间。"
+    },
+    {
+      "id": "demo-trailer-ruyuan",
+      "file": "examples/demo-trailer-ruyuan.html",
+      "pageType": "列表页",
+      "coversScenarios": ["入园列表", "多选运单", "调度单分组全选", "分组入园登记 → toast"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "checkbox-radio", "button"],
+      "notes": "入园列表页(落柜/离园同型)。复用 .checkbox 视觉，行内 onclick toggleCb/toggleGroup(用 stopImmediatePropagation 绕过 initCheckbox 自动切换)实现运单多选 + 调度单全选；.card__footer 分组『入园登记』按钮 register() 校验选中数 → XUI.toast。字段：车牌号/订舱号/柜子类型/柜号(L)/月台信息(L)/要求装货时间(L)/装货点顺序/是否多地拼货。"
+    },
+    {
+      "id": "demo-trailer-luogui",
+      "file": "examples/demo-trailer-luogui.html",
+      "pageType": "列表页",
+      "coversScenarios": ["落柜列表", "多选运单", "分组落柜登记 → toast"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "checkbox-radio", "button"],
+      "notes": "落柜列表页，与入园同型(demo-trailer-ruyuan 复制微调)，按钮『落柜登记』。"
+    },
+    {
+      "id": "demo-trailer-liyuan",
+      "file": "examples/demo-trailer-liyuan.html",
+      "pageType": "列表页",
+      "coversScenarios": ["离园列表", "多选运单", "分组离园登记 → toast"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "checkbox-radio", "button"],
+      "notes": "离园列表页，与入园同型，新增『装货进度』字段、去掉『要求装货时间』，按钮『离园登记』。"
+    },
+    {
+      "id": "demo-trailer-tizhonggui",
+      "file": "examples/demo-trailer-tizhonggui.html",
+      "pageType": "列表页",
+      "coversScenarios": ["提重柜列表", "多选运单", "装货进度筛选(sheet 动作面板)", "按进度过滤运单", "分组提重柜登记 → toast"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "checkbox-radio", "sheet", "button"],
+      "notes": "提重柜列表页。离园同型多选 + 顶部『装货进度』筛选 chip 打开 sheet(动作面板：全部/开始拣货/开始装柜/装柜完成)，applyProgress() 按 data-progress 过滤 .card__waybill 并更新 chip。独立页(body 非 #app)加 .sheet-overlay 居中限宽覆盖。"
+    },
+    {
+      "id": "demo-trailer-fanzhonggui",
+      "file": "examples/demo-trailer-fanzhonggui.html",
+      "pageType": "列表页",
+      "coversScenarios": ["返重柜列表", "三层结构(还柜点→调度单→运单)", "每运单一个返重柜按钮"],
+      "composedOf": ["statusbar-titlebar", "navigation", "searchbox", "card", "button"],
+      "notes": "返重柜列表页。每运单 .card__waybill-actions『返重柜』按钮 → demo-trailer-fanzhonggui-form.html。字段：提单号/车牌号/订舱号/柜子类型/货品分类/货品件数/货品重量/货品体积/柜号(L)。"
+    },
+    {
+      "id": "demo-trailer-fanzhonggui-form",
+      "file": "examples/demo-trailer-fanzhonggui-form.html",
+      "pageType": "操作页",
+      "coversScenarios": ["返重柜操作", "运单信息只读", "返柜凭证照片上传", "底部提交栏(校验≥1张)"],
+      "composedOf": ["statusbar-titlebar", "navigation", "card", "uploader", "button"],
+      "notes": "返重柜操作页。拖车业务卡片·详情版 + 图片上传(返柜凭证)；submitFanzhonggui 校验至少一张照片 → XUI.toast 后返回列表。复用 demo-trailer-detail 的 uploader JS。"
+    },
+    {
+      "id": "demo-exception-report",
+      "file": "examples/demo-exception-report.html",
+      "pageType": "功能选择页",
+      "coversScenarios": ["异常提报通用导航页", "menu-item 列表(返空柜/变更柜号/其他异常)", "请查询要提报的单号弹窗", "按类型路由到对应表单"],
+      "composedOf": ["statusbar-titlebar", "menu-item", "dialog", "sheet", "input", "button"],
+      "notes": "异常提报通用导航页(渐变头部 + 功能标识 + menu-list)。异常提报详情『不作页面，用弹窗』(Figma 7532:86540)：点列表项 openException(type) 弹『请查询要提报的单号』弹窗，确定 confirmQuery() → 关闭查询弹窗并打开异常提报表单弹窗 #exform-dialog(运单信息只读卡 + 拖车异常类型 sheet + 备注 textarea 0/50 + 照片上传 + 提交)。返空柜/变更柜号入口会预置拖车异常类型，其他异常留待手选；提交 XUI.toast 后关闭弹窗。返空柜与变更柜号图标一致(fankonggui.svg)。"
     }
   ],
 
@@ -60,6 +156,7 @@
     { "slug": "input", "serves": ["注册/登录输入框", "表单文本录入"], "preview": "preview/component-input.html" },
     { "slug": "selector", "serves": ["多选框", "单选框", "父子联动多选"], "preview": "preview/component-dialog.html" },
     { "slug": "dialog", "serves": ["弹窗", "确认/取消", "表单弹窗"], "preview": "preview/component-dialog.html" },
+    { "slug": "sheet", "serves": ["动作面板(列表选择)", "选择器(单列滚轮)", "时间选择(多列滚轮)", "表单级弹出选择"], "preview": "preview/component-sheet.html" },
     { "slug": "tag", "serves": ["运单状态标签(蓝)", "2C/收货点标签(橙)", "电商补货标签(紫)"], "preview": "preview/component-card.html" },
     { "slug": "checkbox-radio", "serves": ["多选框", "单选框", "父子联动多选"], "preview": "preview/component-card.html" },
     { "slug": "divider", "serves": ["分割线", "带展开收起分割线"], "preview": "preview/component-card.html" },
@@ -107,7 +204,8 @@
     "whenUnclear": "必须询问人类：是『在首页金刚区新增功能球(新增模块)』还是『在现有功能球里改』？",
     "newBall": "引用 demo-home，在金刚区加一个新的真实 SVG 图标(+可选角标)，点击进入该功能的功能选择页/列表页；首页其余保持 demo-home 原样。",
     "modifyExisting": "引用 demo-home，不新增图标，点击对应现有功能球进入该功能的列表页；首页其余保持不变。",
-    "forbidden": "把金刚区改 emoji、待办任务换自造九宫格、去掉渐变头部等『整块重画首页』行为。"
+    "forbidden": "把金刚区改 emoji、待办任务换自造九宫格、去掉渐变头部等『整块重画首页』行为。",
+    "fixedSections": "首页「待办任务」区（.section-title「待办任务」+ 运单卡片列表）为固定模块，生成新原型时原样复制 demo-home，不得增删卡片/改文案/换布局；仅当用户明确要求改动「待办任务」时才可调整。改动首页其他区域时该区同样保持原样。"
   },
 
   "sourceUsageRules": {
@@ -118,16 +216,48 @@
     "deprecatedTrees": ["任何非 references/ui.css 的样式路径（含旧 design-system/*、xinxiaodi-design-system/*）均禁止引用"]
   },
 
+  "navigationFlows": {
+    "$description": "页面跳转链路（机读），供 demo 直接实现点击交互。链路：首页金刚区 → 功能选择页(导航页) → 列表页 → 操作/详情页。",
+    "拖车业务": {
+      "entry": { "from": "examples/demo-home.html", "trigger": "金刚区『拖车业务』功能球", "to": "examples/demo-trailer.html" },
+      "hub": { "page": "examples/demo-trailer.html", "pageType": "功能选择页", "note": "拖车业务导航页；功能球网格，点击各功能球进入对应列表页" },
+      "modules": [
+        { "module": "提柜", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-tigui.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "提柜" }, "detail": { "pageType": "操作页", "example": "examples/demo-trailer-detail.html" } },
+        { "module": "入园", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-ruyuan.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "入园登记", "note": "多选运单 + 调度单分组『入园登记』→ toast，无独立操作页" } },
+        { "module": "落柜", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-luogui.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "落柜登记", "note": "多选运单 + 分组『落柜登记』→ toast" } },
+        { "module": "提重柜", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-tizhonggui.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "提重柜登记", "note": "多选运单 + 装货进度筛选(sheet) + 分组『提重柜登记』→ toast" } },
+        { "module": "离园", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-liyuan.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "离园登记", "note": "多选运单 + 分组『离园登记』→ toast" } },
+        { "module": "过磅", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-weighing.html", "listCard": "拖车业务卡片(.card--trailer，无场站头)", "cardButton": "过磅登记" }, "detail": { "pageType": "弹窗/面板", "example": "examples/demo-trailer-weighing.html", "note": "过磅登记为轻量录入(过磅重量 KG)，点『过磅登记』弹出过磅登记弹窗(dialog)" } },
+        { "module": "返重柜", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-fanzhonggui.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "返重柜" }, "detail": { "pageType": "操作页", "example": "examples/demo-trailer-fanzhonggui-form.html", "note": "点每运单『返重柜』进入操作页，上传返柜凭证照片 + 提交" } },
+        { "module": "改约", "listPage": { "pageType": "列表页", "example": "examples/demo-trailer-reschedule.html", "listCard": "拖车业务卡片(.card--trailer)", "cardButton": "改约" }, "detail": { "pageType": "弹窗/面板", "example": "examples/demo-trailer-reschedule.html", "note": "改约为轻量录入，点『改约』弹出入园改约弹窗(dialog)：预约入园日期(只读) + 预约时间段(起—止两个时间选择) + 提交" } }
+      ],
+      "otherModules": ["派车", "换车接单", "业务监控"],
+      "otherModulesNote": "派车/换车接单/业务监控为管理端功能，不在司机端 demo 范围；demo 中『换车接单』功能球点击 → XUI.toast('换车接单功能建设中') 占位。",
+      "异常提报": {
+        "trigger": "导航页『异常提报』功能球",
+        "to": "examples/demo-exception-report.html",
+        "hubType": "通用导航页（menu-item 列表，非功能球网格）",
+        "title": "异常提报",
+        "items": ["返空柜", "变更柜号", "其他异常"],
+        "itemFlow": "异常提报详情用弹窗、不作页面(Figma 7532:86540)。点任一列表项 openException(type) → 弹『请查询要提报的单号』弹窗（选单号类型 + 输入单号 + 取消/确定）→ 确定 confirmQuery() 关闭查询弹窗并打开异常提报表单弹窗 #exform-dialog；返空柜/变更柜号入口预置『拖车异常类型』，其他异常留待手选。",
+        "formDialog": { "id": "#exform-dialog", "type": "弹窗(dialog 复用 .dialog)", "figma": "7532:86540", "width": "320px", "fields": ["运单信息只读卡(运单号/提单号/调度单号/柜子类型，bg-1 2列)", "拖车异常类型(.exform__select → #extype-sheet 动作面板)", "备注(.textarea + 0/50 计数)", "照片上传(.uploader-field)"], "submit": "提交 → XUI.toast('提交成功') 后关闭弹窗" },
+        "note": "异常提报点击后进入 menu-item 通用导航页，标题『异常提报』，列表项：返空柜 / 变更柜号 / 其他异常。异常提报详情为弹窗(#exform-dialog)而非独立页面。返空柜与变更柜号图标一致(tuoche/fankonggui.svg，待补变更柜号正式图标)。"
+      },
+      "listToDetailTrigger": "在列表页点击卡片底部的操作按钮(cardButton)进入对应详情/操作页。示例：提柜列表页点『提柜』按钮 → 提柜详情/操作页(examples/demo-trailer-detail.html)。",
+      "notes": "各列表页逐页字段/场站标签/按钮见 components/card.json.pageFieldConfig；列表卡片为拖车业务卡片(.card--trailer)，过磅页卡片无场站头；详情/操作页模板见 examples/demo-trailer-detail.html。子功能正确命名为 入园/离园/返重柜（demo-trailer.html 旧稿的入院/离院/反重柜为笔误，以此为准）。"
+    }
+  },
+
   "knownGaps": [
     {
       "gap": "底部弹出面板 bottom-sheet",
-      "status": "deferred",
-      "note": "设计系统暂无底部上滑面板组件，弹窗统一居中(dialog)。需要底部面板的场景暂用居中弹窗代替，后续由人类补充正式组件。"
+      "status": "resolved",
+      "note": "已补正式组件 sheet（弹出面板）：ui.css 第 21 节 .sheet-overlay/.sheet；组件规范 components/sheet.json；预览 preview/component-sheet.html。含动作面板(列表选择)/选择器(单列滚轮)/时间选择(多列滚轮)三变体，头部 取消/标题/确认，最高 536px 超出滚动。选择/时间录入用此面板，不再用居中 dialog 代替。"
     },
     {
       "gap": "照片上传区域 photo-upload",
-      "status": "deferred",
-      "note": "ui.css 无照片上传组件，拖车提柜/返重柜/返空柜/异常录入暂用原型内 proto-upload 临时块，待补正式组件。"
+      "status": "resolved",
+      "note": "已补正式组件 uploader（ui.css 第 20 节 .uploader-field/.uploader；组件规范 components/uploader.json；预览 preview/component-uploader.html）。拖车提柜/返重柜/异常录入等用该组件，不再用临时 proto-upload。"
     },
     {
       "gap": "金刚区功能球 grid / 首页快捷卡 quick-actions",
@@ -135,9 +265,9 @@
       "note": "仅存在于 examples/demo-home 内联样式，非正式 ui.css 组件；原型暂复用示例私有类，待回收进 ui.css。"
     },
     {
-      "gap": "拖车子功能金刚区图标（提柜/入园/落柜/提重柜/离园/过磅/改约）",
-      "status": "deferred",
-      "note": "assets/shortcuts 无这些子功能 SVG 图标，功能选择页暂用 emoji 占位，待补图标后替换。"
+      "gap": "拖车子功能金刚区图标（派车/过磅/提柜/落柜/入院/离院/提重柜/反重柜/换车接单/改约/业务监控/异常提报）",
+      "status": "resolved",
+      "note": "已补齐 assets/icons/tuoche/ 下 12 个真实 SVG 图标（中文拼音命名），功能选择页成品见 examples/demo-trailer.html。"
     }
   ]
 }

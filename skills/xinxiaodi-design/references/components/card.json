@@ -7,7 +7,7 @@
   "variantDimensions": [
     {
       "axis": "type",
-      "values": ["运单卡片", "签收管理卡片", "物流信息卡片"]
+      "values": ["运单卡片", "拖车业务卡片", "签收管理卡片", "物流信息卡片"]
     },
     {
       "axis": "mode",
@@ -17,6 +17,8 @@
   "representativeVariants": [
     "运单卡片-collapsed",
     "运单卡片-expanded",
+    "拖车业务卡片-single",
+    "拖车业务卡片-multi",
     "签收管理卡片-collapsed",
     "签收管理卡片-expanded",
     "物流信息卡片-default"
@@ -149,6 +151,163 @@
       }
     }
   },
+  "拖车业务卡片结构": {
+    "$description": "拖车业务卡片用于拖车业务各页面（提柜、返柜等），结构与运单卡片一致的三层数据：场站(地点头) → 调度单(调度单号+下达时间) → 运单小卡片(运单号 + 运单信息字段 + 操作按钮)。一个大卡片可包含多个调度单，每个调度单下可挂多个运单小卡片，每个运单小卡片底部各带一个操作按钮(如提柜)。复用运单卡片 .card__* 原子类；运单信息字段区改用 2 列/1 列网格 .card__grid。",
+    "figmaNode": "7532:86792",
+    "parts": [
+      {
+        "name": "1. 场站信息（地点头）",
+        "description": "大卡片顶部区域，展示当前场景的场站定位",
+        "fields": [
+          "场景标签(tag)：随页面变化，提柜页=「提柜点」，返柜页=「返柜点」，其余页面同理替换文案",
+          "地址(标签右侧，较长时最多显示 2 行，超出省略)",
+          "【编码】+名称(标签+地址下方一行，如 【A001】xx场站)"
+        ],
+        "layout": "标签+地址同行(标签左、地址右，地址可折行) → 【编码】+名称行",
+        "specs": {
+          "tag": "橙色边框标签(border 1px #FF7D00, radius 2px, 11px Medium #FF7D00)，文案随页面切换（提柜点/返柜点/…）",
+          "address": "14px Medium #1D2129，最多 2 行，超出省略（.card__addr--wrap）",
+          "codeName": "12px Regular #1D2129，编码用【】包裹（.card__warehouse）"
+        }
+      },
+      {
+        "name": "2. 调度单信息（可多组）",
+        "description": "场站头下方的调度单分组头，展示调度单号与下达时间（与运单号是不同数据）。一个大卡片可有多个调度单组",
+        "fields": [
+          "调度单号(左，如 D22110100291)",
+          "下达时间(右，如 下达时间：2022/11/16 18:00)"
+        ],
+        "layout": "调度单号左对齐 + 下达时间右对齐（同一行）",
+        "specs": {
+          "dispatchNo": "12px Medium #1D2129，左对齐（.card__dispatch-plate）",
+          "time": "10px Regular #7C8492，右对齐（.card__dispatch-time）",
+          "spacing": "调度单号行上下间距 8px（.card--trailer .card__dispatch padding: 8px 16px）"
+        }
+      },
+      {
+        "name": "3. 运单小卡片（每个调度单下可多个）",
+        "description": "运单信息小卡片：绿底头(运单号) + 灰底身(运单信息字段网格)，圆角内嵌块。每个运单小卡片底部各带一个操作按钮",
+        "fields": [
+          "运单号(小卡片绿底头部，如 运单号 HECPX1233313131313545)",
+          "运单信息字段网格（短字段 2 列 / 长字段 1 列）",
+          "操作按钮(如提柜按钮，右对齐)"
+        ],
+        "layout": "绿底头(运单号) → 灰底身(字段网格) → 底部操作按钮(右对齐，白底)",
+        "specs": {
+          "orderTop": "绿底 rgba(0,170,166,0.1)，运单号标签 12px Medium #1D2129(.card__waybill-label) + 值 12px Medium #1D2129(.card__order-sap)；下方带 0.5px color-border-3(#C9CDD4) 分割线",
+          "orderBody": "灰底 #F2F3F5，padding 12px，内含字段网格",
+          "fieldGrid": "短字段一排 2 个各占 50%（.card__grid-item），值超出 50% 时单行省略(...)；长字段独占一行 100%（.card__grid-item--full），完整显示。长/短分类与逐页字段见 fieldConfig / pageFieldConfig",
+          "field": "12px：label #7C8492（.card__grid-label）+ value #1D2129（.card__grid-value）",
+          "actionButton": "每个运单小卡片底部各 1 个按钮，右对齐，距上 8px（.card__waybill-actions + .btn.btn--sm.btn--primary，如「提柜」）"
+        }
+      }
+    ],
+    "fieldConfig": {
+      "$description": "运单信息字段占位宽度规则：字段按长短分两类，长短由该字段是否属于下列长字段集合决定。",
+      "长字段_1列100%": ["要求装货时间", "首个装货点", "柜号", "预约入园时间", "月台信息"],
+      "长字段说明": "长字段独占一行(.card__grid-item--full)，内容完整显示（可换行），不省略",
+      "短字段_2列各50%": "除长字段外的其他字段均为短字段(.card__grid-item)，一排 2 个各占 50%；短字段值超出 50% 列宽时单行省略(...)",
+      "短字段示例": ["提单号", "车牌号", "订舱号", "柜子类型", "是否多地拼货", "装货点顺序", "装货进度", "货品分类", "货品件数", "货品重量", "货品体积"],
+      "新增字段规则": "拖车业务后续新增字段时，必须先询问该字段是长字段(100%)还是短字段(50%)，据此决定占位宽度；不得自行臆断。"
+    },
+    "pageFieldConfig": {
+      "$description": "拖车业务 8 个列表页的拖车业务卡片字段配置。每个列表页 = 状态栏+标题栏 + 定位栏 + 有筛选的搜索框 + 拖车业务卡片。fields 为运单号下方的运单信息字段（按显示顺序），(L)=长字段独占一行，其余为短字段。",
+      "提柜": {
+        "场站标签": "提柜点", "编码示例": "A001", "场站名称示例": "xxx场站",
+        "场站头": true,
+        "fields": ["提单号", "车牌号", "柜子类型", "是否多地拼货", "要求装货时间(L)", "首个装货点(L)"],
+        "按钮": "提柜"
+      },
+      "入园": {
+        "场站标签": "装货点", "编码示例": "H1532", "场站名称示例": "青岛平度仓",
+        "场站头": true,
+        "fields": ["车牌号", "订舱号", "柜子类型", "柜号(L)", "是否多地拼货", "预约入园时间(L)", "装货点顺序", "要求装货时间(L)"],
+        "按钮": "入园登记"
+      },
+      "落柜": {
+        "场站标签": "装货点", "编码示例": "H1532", "场站名称示例": "青岛平度仓",
+        "场站头": true,
+        "fields": ["车牌号", "订舱号", "柜子类型", "柜号(L)", "是否多地拼货", "要求装货时间(L)", "装货点顺序", "月台信息(L)"],
+        "按钮": "落柜登记"
+      },
+      "提重柜": {
+        "场站标签": "装货点", "编码示例": "H1532", "场站名称示例": "青岛平度仓",
+        "场站头": true,
+        "fields": ["车牌号", "订舱号", "柜子类型", "柜号(L)", "是否多地拼货", "要求装货时间(L)", "装货点顺序", "月台信息(L)"],
+        "按钮": "提重柜登记"
+      },
+      "离园": {
+        "场站标签": "装货点", "编码示例": "H1532", "场站名称示例": "青岛平度仓",
+        "场站头": true,
+        "fields": ["车牌号", "订舱号", "柜子类型", "柜号(L)", "是否多地拼货", "装货进度", "装货点顺序", "月台信息(L)"],
+        "按钮": "离园登记"
+      },
+      "过磅": {
+        "场站标签": null, "编码示例": null, "场站名称示例": null,
+        "场站头": false,
+        "$note": "过磅列表页的卡片无场站头，直接从调度单信息开始",
+        "fields": ["车牌号", "订舱号", "柜子类型", "柜号(L)", "是否多地拼货"],
+        "按钮": "过磅登记"
+      },
+      "返重柜": {
+        "场站标签": "返柜点", "编码示例": "A001", "场站名称示例": "xxx场站",
+        "场站头": true,
+        "fields": ["提单号", "车牌号", "订舱号", "柜子类型", "柜号(L)", "货品分类", "货品件数", "货品重量", "货品体积"],
+        "按钮": "返重柜"
+      },
+      "改约": {
+        "场站标签": "装货点", "编码示例": "H1532", "场站名称示例": "青岛平度仓",
+        "场站头": true,
+        "fields": ["车牌号", "订舱号", "柜子类型", "柜号(L)", "是否多地拼货", "预约入园时间(L)", "装货点顺序", "要求装货时间(L)"],
+        "按钮": "改约"
+      }
+    },
+    "listPageStructure": "每个拖车业务列表页从上到下：状态栏+标题栏 → 定位栏(定位组件) → 有筛选的搜索框(searchbox 含筛选下拉) → 拖车业务卡片列表(.card-list)。",
+    "detailVariant": {
+      "$description": "拖车业务卡片·详情页版本（figmaNode 7532:87177）：在列表版的基础上，于运单小卡片灰底身(.card__order-body)的运单信息字段下方，追加『拍照获取搜索框』+『图片上传组件』，用于详情/操作页录入。完全复用已有组件，不新增卡片专属 class。",
+      "figmaNode": "7532:87177",
+      "orderBodyAppend": [
+        "拍照获取搜索框：.searchbox（无搜索图标）+ .searchbox__query『拍照获取』，placeholder『请输入柜号或拍照获取』，与字段间距 12px",
+        "图片上传组件 × N：.uploader（默认态 = .uploader__add + .uploader__hint 必填提示），如『集装箱号照片』『柜号照片』，每区最多 9 张"
+      ],
+      "pageTemplate": "详情/操作页模板：状态栏+标题栏 → 定位栏(.location-bar) → 拖车业务卡片(详情版) → 底部固定操作栏(.action-bar + .btn.btn--lg.btn--primary『提交』)。成品见 examples/demo-trailer-detail.html",
+      "reuseNote": "详情版仅在 .card__order-body 内追加 .searchbox（拍照获取变体）与 .uploader，其余结构同列表版；不新增 class。"
+    },
+    "dataStructure": "场站分组(场站信息) → 调度单分组(调度单号+下达时间) → 运单明细(运单小卡片)。一个场站大卡片可包含多个调度单，一个调度单可包含多个运单小卡片，每个运单小卡片对应一个运单及其操作按钮。注意：调度单号（如 D22110100291）与运单号（如 HECPX…）是不同层级的不同数据。",
+    "pageVariants": {
+      "$description": "拖车业务卡片用于 8 个列表页（提柜/入园/落柜/提重柜/离园/过磅/返重柜/改约），场站标签文案、字段集合与底部按钮随页面切换，卡片骨架不变。逐页字段与按钮见 pageFieldConfig。",
+      "场站标签映射": { "提柜": "提柜点", "入园/落柜/提重柜/离园/改约": "装货点", "返重柜": "返柜点", "过磅": "无场站头" }
+    },
+    "reuseNote": "容器加 .card--trailer 修饰（收敛拖车专属间距）。复用运单卡片原子类：列表 .card-list / 地点头 .card__location + .card__location-row + .card__addr(+.card__addr--wrap) + .card__warehouse / 分割线 .card__divider.card__divider--full / 调度单头 .card__dispatch + .card__dispatch-row + .card__dispatch-plate + .card__dispatch-time / 运单小卡片 .card__order + .card__order-top + .card__order-sap + .card__order-body。新增：字段网格 .card__grid 系列 + 运单小卡片包裹 .card__waybill + 按钮区 .card__waybill-actions。",
+    "structureClasses": {
+      "容器": ".card.card--trailer（拖车专属间距修饰，收敛调度单/运单小卡片/按钮间距为 8px；列表页外层用 .card-list 提供 12px 卡片间距）",
+      "1-场站信息(地点头)": {
+        "分组容器": ".card__location",
+        "标签+地址行": ".card__location-row（.tag.tag--orange + .card__addr.card__addr--wrap）",
+        "编码+名称行": ".card__warehouse"
+      },
+      "分割线": ".card__divider.card__divider--full（场站头与调度单之间 / 多个调度单组之间）",
+      "2-调度单信息": {
+        "分组容器": ".card__dispatch（.card--trailer 下上下内边距 8px，即调度单号 D… 上下间距 8px）",
+        "调度单号+下达时间行": ".card__dispatch-row（.card__dispatch-plate 左=调度单号 / .card__dispatch-time 右=下达时间）"
+      },
+      "3-运单小卡片": {
+        "包裹层": ".card__waybill（左右 16px、底部 8px；一个运单小卡片对应一个 .card__waybill）",
+        "内嵌块容器": ".card__order（.card--trailer 下取消自带下边距）",
+        "绿底头(运单号)": ".card__order-top（.card__waybill-label「运单号」12px Medium color-text-1 + .card__order-sap 值；.card--trailer 下带 0.5px color-border-3 下分割线）",
+        "灰底身": ".card__order-body",
+        "字段网格": ".card__grid（内含 .card__grid-item 短字段 50% / .card__grid-item--full 长字段 100%，每项 .card__grid-label + .card__grid-value）",
+        "底部按钮": ".card__waybill-actions（右对齐，距上 8px）+ .btn.btn--sm.btn--primary"
+      }
+    },
+    "spacing": {
+      "$description": "拖车业务卡片专属间距（由 .card--trailer 作用域控制）",
+      "调度单号(D…)上下间距": "8px（.card__dispatch padding: 8px 16px）",
+      "操作按钮距上间距": "8px（.card__order 无下边距 + .card__waybill-actions padding-top: 8px）",
+      "运单小卡片之间/与卡片底部": "8px（.card__waybill padding-bottom: 8px）",
+      "运单号绿底头下分割线": "0.5px solid color-border-3（#C9CDD4）"
+    }
+  },
   "anatomy": {
     "parts": [
       "container(343px白底圆角卡片)",
@@ -194,7 +353,12 @@
     "卡片内嵌内容区(订单body)用 bg-1/color-fill-2(#F2F3F5) 底色",
     "预改约区域(订单footer)用 bg-2/color-fill-3(#E5E6EB) 底色",
     "多选模式下checkbox出现在三个层级: 提货点标签旁、车牌号旁、订单顶部",
-    "标签颜色: 提货点=蓝(#165DFF), 收货点=橙(#FF7D00), 2C=橙, 直发=绿(#00AAA6)"
+    "标签颜色: 提货点=蓝(#165DFF), 收货点=橙(#FF7D00), 2C=橙, 直发=绿(#00AAA6)",
+    "拖车业务卡片: 三层结构同运单卡片，复用 .card__* 原子类；场站信息(标签+地址+【编码】名称) → 调度单(调度单号+下达时间) → 多个运单小卡片(运单号绿底头 + 字段网格 + 操作按钮)",
+    "拖车业务卡片调度单号(D…)与运单号(HECPX…)是不同层级的不同数据，勿混用",
+    "拖车业务卡片标签文案随页面切换(提柜页=提柜点/返柜页=返柜点)，用橙色边框标签",
+    "拖车业务卡片运单信息用 .card__grid: 短字段(提单号/车牌号/柜子类型/是否多地拼货)一排2个各50%，长字段(要求装货时间/首个装货点)独占一行100%",
+    "拖车业务卡片每个运单小卡片(.card__order)底部各带 1 个操作按钮(.card__waybill-actions + btn，如提柜)"
   ],
   "doNotInvent": [
     "无圆角卡片",
@@ -209,15 +373,18 @@
     { "scenario": "运单卡片列表", "variant": "运单卡片-collapsed", "when": "列表页每行展示一个运单，默认收起，仅显示提货/收货信息+运单信息+按钮组" },
     { "scenario": "运单详情展开", "variant": "运单卡片-expanded", "when": "点击展开/收起 pill 后显示订单信息详情" },
     { "scenario": "批量多选", "variant": "运单卡片-checkbox", "when": "多选模式下勾选多条运单批量操作（checkbox 出现在提货点/车牌/订单三级）" },
-    { "scenario": "签收管理卡片", "variant": "签收管理卡片-collapsed / 签收管理卡片-expanded", "when": "签收相关列表/操作" },
-    { "scenario": "物流信息卡片", "variant": "物流信息卡片-default", "when": "展示物流轨迹/信息概要" }
+    { "scenario": "拖车业务卡片(单运单)", "variant": "拖车业务卡片-single", "when": "拖车业务列表（提柜/返柜等），场站头 + 调度单头 + 1 个运单小卡片 + 操作按钮" },
+    { "scenario": "拖车业务卡片(多运单)", "variant": "拖车业务卡片-multi", "when": "一个大卡片下的调度单挂载多个运单小卡片，每个运单小卡片底部各带一个操作按钮（如提柜）；大卡片也可含多个调度单组" },
+    { "scenario": "拖车业务 8 个列表页", "variant": "拖车业务卡片(提柜/入园/落柜/提重柜/离园/过磅/返重柜/改约)", "when": "8 个拖车业务列表页：状态栏+标题栏 + 定位栏 + 有筛选的搜索框 + 拖车业务卡片列表。逐页字段/标签/按钮见 pageFieldConfig；过磅页卡片无场站头" },
+    { "scenario": "签收管理卡片", "variant": "签收管理卡片-collapsed / 签收管理卡片-expanded", "when": "待签收下的整单签收/整单拒收/回单上传等操作页；含签单/回单图片上传(uploader)与拒收原因选择(sheet 动作面板)" },
+    { "scenario": "物流信息卡片", "variant": "物流信息卡片-default", "when": "订单管理列表页（管理端）：订单号行+标签+路线 → 灰底信息块(下单/统仓/组织/件重方/承运商) → 底部按钮组" }
   ],
   "states": [
     { "state": "collapsed", "trigger": "默认", "class": "card（订单信息隐藏）" },
     { "state": "expanded", "trigger": "点击展开/收起 pill", "class": "card（配合 .card__toggle / .card__toggle-pill 切换，.card__orders--visible 显隐订单信息）" },
     { "state": "checkbox", "trigger": "多选模式", "class": "card（配合 .checkbox 三级选择）" }
   ],
-  "cssClasses": ["card", "card-list", "card__top", "card__alert", "card__body", "card__info-box", "card__divider", "card__divider--full", "card__footer", "card__footer--between", "card__expand", "card__expand-pill", "card__location", "card__location-row", "card__addr", "card__warehouse", "card__cargo", "card__dispatch", "card__dispatch-row", "card__dispatch-plate", "card__dispatch-time", "card__toggle", "card__toggle-pill", "card__toggle-pill--open", "card__orders", "card__orders--visible", "card__order", "card__order-top", "card__order-sap", "card__order-body", "card__field", "card__field-label", "card__field-value", "card__product", "card__order-footer", "card__order-contact", "card__order-appoint", "card__stats", "card__actions"],
+  "cssClasses": ["card", "card-list", "card__top", "card__alert", "card__body", "card__info-box", "card__divider", "card__divider--full", "card__footer", "card__footer--between", "card__expand", "card__expand-pill", "card__location", "card__location-row", "card__addr", "card__addr--wrap", "card__warehouse", "card__cargo", "card__dispatch", "card__dispatch-row", "card__dispatch-plate", "card__dispatch-time", "card--trailer", "card__grid", "card__grid-item", "card__grid-item--full", "card__grid-label", "card__grid-value", "card__waybill", "card__waybill-label", "card__waybill-actions", "card__toggle", "card__toggle-pill", "card__toggle-pill--open", "card__orders", "card__orders--visible", "card__order", "card__order-top", "card__order-sap", "card__order-body", "card__field", "card__field-label", "card__field-value", "card__product", "card__order-footer", "card__order-contact", "card__order-appoint", "card__stats", "card__actions"],
   "structureClasses": {
     "$description": "运单卡片 = .card 容器 + 下列 .card__* 原子类拼装（值全部来自 tokens.json，定义见 ui.css 第8节）。",
     "容器": ".card（列表页外层用 .card-list 提供 12px 卡片间距）",
@@ -252,5 +419,5 @@
       "按钮组": ".card__actions（内含 .btn 系列，见 button-group.json）"
     }
   },
-  "exampleRefs": ["examples/demo-list.html", "examples/demo-pending-arrival.html", "preview/component-card.html"]
+  "exampleRefs": ["examples/demo-list.html", "examples/demo-pending-arrival.html", "examples/demo-trailer-detail.html", "preview/component-card.html"]
 }

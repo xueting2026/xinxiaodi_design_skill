@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递 - 返重柜列表</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
+.page-sticky { position: sticky; top: 0; z-index: 50; }
+</style>
+</head>
+<body>
+
+<div class="demo-topbar page-sticky">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons"><img src="../assets/icons/bar_status_black.svg" height="12" alt="status" /></div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="location.href='demo-trailer.html'">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="titlebar__title">返重柜</span>
+    <span class="titlebar__right titlebar__capsule"><img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp" /></span>
+  </div>
+</div>
+
+<div class="location-bar">
+  <img src="../assets/icons/position_green_16px.svg" class="location-bar__icon" width="16" height="16" />
+  <span class="location-bar__address" style="flex:1;">山东省青岛市市南区江西路11号山东省青岛市市南区</span>
+</div>
+
+<div style="padding: 8px 16px;">
+  <div class="searchbox">
+    <div class="searchbox__filter">
+      <div class="searchbox__filter-trigger">
+        <span class="searchbox__filter-label">还柜点</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="searchbox__filter-divider"></div>
+      <div class="searchbox__filter-menu">
+        <div class="searchbox__filter-item">还柜点</div>
+        <div class="searchbox__filter-item">调度单号</div>
+        <div class="searchbox__filter-item">运单号</div>
+        <div class="searchbox__filter-item">订舱号</div>
+      </div>
+    </div>
+    <input class="searchbox__input" placeholder="请输入查询内容" />
+    <div class="searchbox__clear"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1L7 7M7 1L1 7" stroke="#FFF" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+    <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
+  </div>
+</div>
+
+<!-- 返重柜卡片列表（3 层：还柜点 → 调度单 → 运单，每运单一个返重柜按钮） -->
+<div class="card-list">
+  <div class="card card--trailer">
+    <div class="card__location">
+      <div class="card__location-row">
+        <span class="tag tag--orange">还柜点</span>
+        <span class="card__addr card__addr--wrap">山东省青岛市黄岛区前湾港路青岛前湾集装箱码头二号闸口</span>
+      </div>
+      <div class="card__warehouse">【TCGC002】青岛前湾港还柜场站</div>
+    </div>
+    <div class="card__divider card__divider--full"></div>
+    <div class="card__dispatch">
+      <div class="card__dispatch-row">
+        <span class="card__dispatch-plate">D22110100291</span>
+        <span class="card__dispatch-time">下达时间：2022/11/16 18:00</span>
+      </div>
+    </div>
+
+    <div class="card__waybill">
+      <div class="card__order">
+        <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX1233313131313545</span></div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">提单号</span><span class="card__grid-value">THTM001</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁URT861</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010112345678</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">40HQ</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品分类</span><span class="card__grid-value">冰箱</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品件数</span><span class="card__grid-value">120 件</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品重量</span><span class="card__grid-value">8600 kg</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品体积</span><span class="card__grid-value">58 m³</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">CBHU1234567</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card__waybill-actions"><button class="btn btn--sm btn--primary" onclick="location.href='demo-trailer-fanzhonggui-form.html'">返重柜</button></div>
+    </div>
+
+    <div class="card__waybill">
+      <div class="card__order">
+        <div class="card__order-top"><span class="card__waybill-label">运单号</span><span class="card__order-sap">HECPX9988776655443322</span></div>
+        <div class="card__order-body">
+          <div class="card__grid">
+            <div class="card__grid-item"><span class="card__grid-label">提单号</span><span class="card__grid-value">THTM002</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">车牌号</span><span class="card__grid-value">鲁UN521E</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">订舱号</span><span class="card__grid-value">SNBO2026010167890123</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">柜子类型</span><span class="card__grid-value">20GP</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品分类</span><span class="card__grid-value">洗衣机</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品件数</span><span class="card__grid-value">80 件</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品重量</span><span class="card__grid-value">5200 kg</span></div>
+            <div class="card__grid-item"><span class="card__grid-label">货品体积</span><span class="card__grid-value">32 m³</span></div>
+            <div class="card__grid-item card__grid-item--full"><span class="card__grid-label">柜号</span><span class="card__grid-value">TCLU7654321</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card__waybill-actions"><button class="btn btn--sm btn--primary" onclick="location.href='demo-trailer-fanzhonggui-form.html'">返重柜</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="../ui.js"></script>
+</body>
+</html>
