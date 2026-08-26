@@ -1,0 +1,311 @@
+{
+  "version": 2,
+  "brand": "信小递管理端",
+  "brandSlug": "xinxiaodi-admin",
+  "end": "admin",
+  "$purpose": "统一 skill 内『管理端』的场景匹配事实源。使用前先经 SKILL.md 闸门 0 判定为管理端。生成 HTML 前，agent 必须用本文件把每一屏的场景与『复用底板 / 组件库』做重合度比对，再按 overlapRules 走三档路由。管理端与司机端共用同一套设计系统核心（token/ui.css/组件/图标/自检脚本，均在本 references 目录）。examplePages 分两类：管理端自有的 ownExamples，与从司机端复用的 driverExampleBaseBoards。",
+
+  "core": {
+    "$description": "设计系统核心即本 references 目录，与司机端共用。管理端不另存副本。",
+    "designSystemRoot": ".",
+    "tokens": "tokens.json",
+    "uiCss": "ui.css",
+    "components": "components",
+    "assets": "assets",
+    "verifyScript": "../scripts/verify-prototype.mjs",
+    "prototypeReferencePath": {
+      "$description": "原型引用核心资源的相对路径写法。",
+      "fromExamplesDir": "../ui.css （assets 同理 ../assets/）",
+      "fromUserWorkspace": "按实际相对/绝对路径回指本 skill references/"
+    }
+  },
+
+  "pageTypes": ["金刚区首页", "功能选择页/Hub", "列表页", "搜索页", "详情页", "弹窗/面板"],
+
+  "$sharedSearchPage": "搜索页与司机端共用同一成品 examples/demo-search.html（组件·token·页面全同，仅实例内容不同）。管理端列表页的搜索框点击 → 跳 demo-search.html。即时搜索：默认/无结果空状态、结果1行·2行、命中词高亮(品牌色)。",
+
+  "modules": ["订单管理", "运单管理", "调度单管理", "签收管理", "回单上传", "超期预警", "拖车业务"],
+
+  "$endDisambiguation": "金刚区入口『回单上传』『拖车业务』与司机端同名，『签收管理↔待签收』『超期预警↔异常提报』与司机端同域。用户只提名称未说端时，先按 SKILL.md 闸门 0 消歧(问司机端还是管理端)，不得默认管理端。",
+
+  "ownExamples": [
+    {
+      "id": "admin-home",
+      "file": "examples/admin-home.html",
+      "module": "首页",
+      "pageType": "金刚区首页",
+      "coversScenarios": ["绿色渐变头+标题信小递+头像问候", "白卡一金刚区六入口(订单/运单/调度单/签收/回单上传/拖车业务)", "白卡二预警预控分组(超期预警)"],
+      "composedOf": ["statusbar-titlebar", "card"],
+      "notes": "管理端统一入口，已按 Figma 还原。金刚区图标用 assets/shortcuts/icon/home/oa/{dingdan,yundan,diaodudan,qianshou,huidan,tuoche,yujing}.svg（彩色）。无快捷卡/待办列表。"
+    },
+    {
+      "id": "admin-trailer-hub",
+      "file": "examples/admin-trailer-hub.html",
+      "module": "拖车业务",
+      "pageType": "功能选择页/Hub",
+      "coversScenarios": ["拖车业务子功能入口页", "功能球网格(派车/业务监控)", "红色数字角标"],
+      "composedOf": ["statusbar-titlebar", "card"],
+      "notes": "管理端拖车业务功能选择页，已按 Figma 还原。骨架复用司机端 demo-trailer.html(trailer-section 卡 + trailer-grid + trailer-item + trailer-badge)，缩减为派车/业务监控两入口。入口图标用 assets/icons/tuoche/{paiche,yewujiankong}.svg（自带浅绿圆底）。"
+    },
+    {
+      "id": "admin-trailer-list",
+      "file": "examples/admin-trailer-list.html",
+      "module": "拖车业务",
+      "pageType": "列表页",
+      "coversScenarios": ["拖车业务列表页模板(派车/业务监控共用)", "带筛选搜索框(用柜需求筛选下拉+查询)", "场站切换", "用柜需求卡片列表", "卡片右下操作按钮"],
+      "composedOf": ["statusbar-titlebar", "searchbox", "card", "button"],
+      "notes": "管理端拖车业务列表页模板，已按 Figma(7532:87598) 用组件库搭建。用柜需求卡片=.card + .card__order-top(绿头条:用柜需求号) + .card__body>.card__field(字段行:船务公司/订单号/船名航次/截港时间) + .card__waybill-actions>.btn(右下操作)。搜索框=带筛选 .searchbox(用柜需求▼筛选下拉 + 查询)。此模板应用于『派车』(按钮=派车)与『业务监控』(换标题/字段/按钮为详情·异常介入)两个列表页，仅换文案与按钮。"
+    },
+    {
+      "id": "admin-trailer-dispatch",
+      "file": "examples/admin-trailer-dispatch.html",
+      "module": "拖车业务",
+      "pageType": "列表页",
+      "coversScenarios": ["派车列表页(点击派车按钮后)", "按调度单号分组卡片", "子运单双列字段(运单号/提单号/提柜点/柜子类型/司机/手机号/车牌号/要求装货时间/首个装货点)", "调度单状态标签(打开/生效)", "生效卡片带加单+分配车辆司机", "打开卡片带移除+分配车辆司机"],
+      "composedOf": ["statusbar-titlebar", "searchbox", "card", "tag", "button"],
+      "notes": "管理端拖车业务派车→调度单分组列表页。从 admin-trailer-list 点击『派车』按钮进入。按调度单号分组，每组含多条子运单卡片(双列 key-value 字段)。调度单状态用 tag(蓝=打开，绿=生效)。打开状态：每条子运单有『移除』+『分配车辆司机』按钮。生效状态：卡片底部有『加单』+『分配车辆司机』按钮。搜索框带筛选(调度单号▼)。"
+    },
+    {
+      "id": "admin-trailer-monitor",
+      "file": "examples/admin-trailer-monitor.html",
+      "module": "拖车业务",
+      "pageType": "列表页",
+      "coversScenarios": ["业务监控列表页", "按调度单号分组卡片", "运单状态筛选(全部/在途/已签收)", "子运单双列字段(运单号/提单号/提柜点/柜子类型/司机/手机号/车牌号/柜号)", "调度单状态标签(在途/已签收)", "节点操作明细按钮"],
+      "composedOf": ["statusbar-titlebar", "searchbox", "card", "tag", "button"],
+      "notes": "管理端拖车业务→业务监控列表页。从 admin-trailer-hub 点击『业务监控』进入。复用派车列表卡片结构(调度单号分组+子运单双列字段)，增加运单状态筛选(全部下拉)和柜号字段。状态标签：蓝=在途，绿=已签收。每条子运单有『节点操作明细』按钮跳转 admin-trailer-node-detail。"
+    },
+    {
+      "id": "admin-trailer-node-detail",
+      "file": "examples/admin-trailer-node-detail.html",
+      "module": "拖车业务",
+      "pageType": "详情页",
+      "coversScenarios": ["节点操作明细(时间线)", "拖车作业节点时间线(提柜/入园/落柜/过磅)", "每节点含操作时间/地点/重量等字段", "节点图片凭证展示"],
+      "composedOf": ["statusbar-titlebar"],
+      "notes": "管理端拖车业务→业务监控→节点操作明细。白色头部+垂直时间线(绿色圆点+连线)展示拖车作业各节点(提柜/入园/落柜/过磅)的操作时间、地点、柜号、重量及图片凭证。时间线组件为页面级自建(无ui.css对应class)。返回 admin-trailer-monitor。"
+    }
+  ],
+
+  "driverExampleBaseBoards": [
+    {
+      "id": "demo-home",
+      "file": "examples/demo-home.html",
+      "pageType": "金刚区首页",
+      "reuseFor": ["管理端金刚区首页骨架来源(已产出 admin-home)"],
+      "composedOf": ["statusbar-titlebar", "card", "floating-button"],
+      "notes": "金刚区首页骨架(渐变头部/快捷卡/网格/dots/待办卡)来源。admin-home 即基于它改造。"
+    },
+    {
+      "id": "demo-list",
+      "file": "examples/demo-list.html",
+      "pageType": "列表页",
+      "reuseFor": ["运单管理列表", "调度单管理列表", "签收管理列表", "回单上传列表", "拖车业务监控列表"],
+      "composedOf": ["statusbar-titlebar", "searchbox", "tab", "card", "button-group", "button"],
+      "notes": "最通用的列表页底板。三层结构(订单→调度单→运单)收起/展开沿用。"
+    },
+    {
+      "id": "demo-trailer-tigui",
+      "file": "examples/demo-trailer-tigui.html",
+      "pageType": "列表页",
+      "reuseFor": ["拖车业务派车列表", "换车接单列表"],
+      "composedOf": ["statusbar-titlebar", "searchbox", "card", "button"],
+      "notes": "每运单一个卡片级操作按钮的列表底板，适配管理端『派车/改派』按钮。"
+    },
+    {
+      "id": "demo-trailer-detail",
+      "file": "examples/demo-trailer-detail.html",
+      "pageType": "详情页",
+      "reuseFor": ["订单详情", "运单详情", "调度单详情", "签收详情", "回单详情"],
+      "composedOf": ["statusbar-titlebar", "card", "uploader", "button"],
+      "notes": "详情/操作页底板。管理端复用时：默认去掉 uploader、字段改只读展示、底部 action-bar 换审核/改派/介入动作；仅『回单上传』模块保留 uploader。"
+    },
+    {
+      "id": "demo-trailer-weighing",
+      "file": "examples/demo-trailer-weighing.html",
+      "pageType": "弹窗/面板",
+      "reuseFor": ["签收核验弹窗", "回单上传弹窗", "异常介入备注弹窗"],
+      "composedOf": ["card", "dialog", "input", "button"],
+      "notes": "列表页 + 轻量表单弹窗(dialog)底板。管理端核验/备注类轻动作复用此 dialog 结构。"
+    },
+    {
+      "id": "demo-trailer-reschedule",
+      "file": "examples/demo-trailer-reschedule.html",
+      "pageType": "弹窗/面板",
+      "reuseFor": ["改派弹窗(只读展示+选择+备注)"],
+      "composedOf": ["card", "dialog", "input", "button"],
+      "notes": "只读字段 + 选择 + 提交的弹窗底板，适配管理端改派(原信息只读 + 选新司机/车辆 + 原因)。"
+    },
+    {
+      "id": "demo-interaction",
+      "file": "examples/demo-interaction.html",
+      "pageType": "弹窗/面板",
+      "reuseFor": ["派单选司机/车辆", "选择类动作面板"],
+      "composedOf": ["dialog", "selector", "sheet", "tab", "button"],
+      "notes": "选择器/动作面板/弹窗交互底板。选司机/选车辆/选时间用 sheet，不用居中 dialog 代替选择。"
+    }
+  ],
+
+  "components": {
+    "$description": "组件白名单与司机端共用（本 references/components）。管理端不新增组件；下表只标注管理端各页型常用组件的 serves 语义偏移。",
+    "source": "components",
+    "list": [
+      { "slug": "statusbar-titlebar", "serves": ["状态栏", "首页标题栏/模块标题栏 + 返回"] },
+      { "slug": "searchbox", "serves": ["单据搜索", "查询项筛选下拉"] },
+      { "slug": "tab", "serves": ["单据状态分组切换(待派单/执行中/异常…)"] },
+      { "slug": "card", "serves": ["首页金刚区/待办卡", "订单/运单/调度单/签收/回单/拖车监控卡片(必带承运司机+车牌+客户等管理维度)"] },
+      { "slug": "tag", "serves": ["业务标签(蓝=运单/提货 橙=2C/收货 紫=电商补货)", "单据状态用功能色文字"] },
+      { "slug": "button", "serves": ["页面级管理主操作", "卡片级管理动作(派单/改派/审核/介入/详情)"] },
+      { "slug": "button-group", "serves": ["卡片底部管理动作按钮组"] },
+      { "slug": "dialog", "serves": ["核验/改派/介入确认", "轻量管理表单弹窗"] },
+      { "slug": "sheet", "serves": ["选司机", "选车辆", "选时间", "筛选动作面板"] },
+      { "slug": "selector", "serves": ["批量勾选单据", "多选/单选"] },
+      { "slug": "input", "serves": ["弹窗内文本录入(备注/原因)"] },
+      { "slug": "uploader", "serves": ["回单上传(仅回单上传模块)"] },
+      { "slug": "floating-button", "serves": ["新建/批量派单等右下角浮动操作", "首页返回顶部"] }
+    ]
+  },
+
+  "moduleRoutes": {
+    "$description": "六模块 ↔ 页型 ↔ 复用来源。listPage/detail/dialog 指向 ownExamples 或 driverExampleBaseBoards 的 id。字段与动作规则以 Design-admin.md §4 为准。统一从 admin-home 金刚区入口进入。",
+    "订单管理": {
+      "homeIcon": "assets/shortcuts/order_mgmt.svg",
+      "listPage": { "pageType": "列表页", "baseBoard": "demo-list", "cardFields": ["客户名称", "订单号", "收/发货地址", "货品概要", "订单状态"], "cardActions": ["详情", "拆分调度"], "tabs": ["全部", "待调度", "调度中", "已完成", "异常"] },
+      "detail": { "pageType": "详情页", "baseBoard": "demo-trailer-detail", "mode": "只读全量 + 关联调度单列表", "actions": ["生成调度单"] }
+    },
+    "运单管理": {
+      "homeIcon": "assets/shortcuts/waybill_mgmt.svg",
+      "listPage": { "pageType": "列表页", "baseBoard": "demo-list", "cardFields": ["运单号(tag--blue)", "承运司机+车牌", "起讫点", "当前节点状态"], "cardActions": ["详情", "异常介入"], "tabs": ["全部", "待提货", "运输中", "待签收", "已签收", "异常"] },
+      "detail": { "pageType": "详情页", "baseBoard": "demo-trailer-detail", "mode": "轨迹/节点时间线只读 + 司机车辆 + 货品", "actions": ["介入处理", "联系司机"] }
+    },
+    "调度单管理": {
+      "homeIcon": "assets/shortcuts/dispatch_mgmt.svg",
+      "listPage": { "pageType": "列表页", "baseBoard": "demo-list", "cardFields": ["调度单号", "关联订单", "计划司机+车辆(未派显示待派单)", "货品", "计划时间"], "cardActions": ["派单", "改派", "详情"], "tabs": ["全部", "待派单", "已派单", "执行中", "已完成"] },
+      "detail": { "pageType": "详情页", "baseBoard": "demo-trailer-detail", "mode": "调度单全量 + 关联运单列表 + 派发记录", "actions": ["派单", "改派"] },
+      "dialog": [
+        { "name": "派单", "baseBoard": "demo-interaction", "widget": "sheet", "content": "选司机 + 选车辆 → 确认" },
+        { "name": "改派", "baseBoard": "demo-trailer-reschedule", "widget": "dialog", "content": "原信息只读 + 选新司机/车辆 + 改派原因(必填) → 提交" }
+      ]
+    },
+    "签收管理": {
+      "homeIcon": "assets/shortcuts/receipt_mgmt.svg",
+      "listPage": { "pageType": "列表页", "baseBoard": "demo-list", "cardFields": ["运单号", "客户", "承运司机+车牌", "签收状态(正常/异常)", "签收时间"], "cardActions": ["核验", "详情"], "tabs": ["全部", "待核验", "已确认", "异常签收"] },
+      "detail": { "pageType": "详情页", "baseBoard": "demo-trailer-detail", "mode": "签收信息 + 司机回传签收凭证(图片只读预览) + 差异说明", "actions": ["确认签收", "标记异常"] },
+      "dialog": [
+        { "name": "核验", "baseBoard": "demo-trailer-weighing", "widget": "dialog", "content": "确认/驳回 + 备注" }
+      ]
+    },
+    "回单上传": {
+      "homeIcon": "assets/shortcuts/receipt_upload.svg",
+      "listPage": { "pageType": "列表页", "baseBoard": "demo-list", "cardFields": ["运单号", "客户", "回单类型", "上传状态(待上传/已上传/待审核)"], "cardActions": ["上传", "详情", "审核"], "tabs": ["全部", "待上传", "待审核", "已通过", "已驳回"] },
+      "detail": { "pageType": "详情页", "baseBoard": "demo-trailer-detail", "mode": "回单凭证预览 + 审核动作", "actions": ["通过", "驳回"] },
+      "dialog": [
+        { "name": "上传", "baseBoard": "demo-trailer-weighing", "widget": "dialog", "content": "选回单类型 + uploader 上传照片 + 提交", "note": "本模块保留 uploader 组件" }
+      ]
+    },
+    "超期预警": {
+      "homeIcon": "assets/shortcuts/overdue_warning.svg",
+      "$note": "与司机端『异常提报』同域但视角相反：管理端监控超期/临期运单并催办介入。",
+      "listPage": { "pageType": "列表页", "baseBoard": "demo-list", "cardFields": ["运单号", "承运司机+车牌", "超期时长/临期倒计时", "客户", "当前节点"], "cardActions": ["催办", "异常介入", "详情"], "tabs": ["全部", "已超期", "临期", "已处理"] },
+      "detail": { "pageType": "详情页", "baseBoard": "demo-trailer-detail", "mode": "运单节点时间线只读 + 超期原因 + 司机车辆", "actions": ["催办", "介入处理", "联系司机"] }
+    },
+    "拖车业务": {
+      "homeIcon": "assets/shortcuts/icon/home/oa/tuoche.svg",
+      "$note": "按 Figma：管理端拖车业务是功能选择页(Hub)，仅含派车 + 业务监控两个子功能(各带待办数角标)。从首页金刚区『拖车业务』进入本 Hub，再进各子功能。",
+      "hub": { "pageType": "功能选择页/Hub", "baseBoard": "admin-trailer-hub", "entries": [
+        { "name": "派车", "icon": "assets/icons/tuoche/paiche.svg", "badge": "待派车数" },
+        { "name": "业务监控", "icon": "assets/icons/tuoche/yewujiankong.svg", "badge": "监控告警数" }
+      ] },
+      "派车": {
+        "listPage": { "pageType": "列表页", "baseBoard": "admin-trailer-list", "template": "用柜需求卡片", "cardHeader": "用柜需求号", "cardFields": ["船务公司", "订单号", "船名航次", "截港时间"], "cardActions": ["派车→admin-trailer-dispatch"], "search": "带筛选(用柜需求) + 场站切换" },
+        "dispatchPage": { "pageType": "列表页", "baseBoard": "admin-trailer-dispatch", "template": "调度单分组卡片(子运单双列字段)", "cardHeader": "调度单号", "cardFields": ["运单号", "提单号", "提柜点", "柜子类型", "司机", "手机号", "车牌号", "要求装货时间", "首个装货点"], "statusTags": ["打开(蓝)", "生效(绿)"], "cardActions": {"打开": ["移除", "分配车辆司机"], "生效": ["加单", "分配车辆司机"]}, "search": "带筛选(调度单号)" },
+        "dialog": [
+          { "name": "派车", "baseBoard": "demo-interaction", "widget": "sheet", "content": "选司机 + 选车辆" },
+          { "name": "改派", "baseBoard": "demo-trailer-reschedule", "widget": "dialog", "content": "原车/司机只读 + 选新司机/车辆 + 备注 → 提交" }
+        ]
+      },
+      "业务监控": {
+        "listPage": { "pageType": "列表页", "baseBoard": "admin-trailer-monitor", "template": "调度单分组卡片(子运单双列字段+柜号)", "cardHeader": "调度单号", "cardFields": ["运单号", "提单号", "提柜点", "柜子类型", "司机", "手机号", "车牌号", "柜号"], "statusTags": ["在途(蓝)", "已签收(绿)"], "cardActions": ["节点操作明细→admin-trailer-node-detail"], "search": "带筛选(调度单号) + 运单状态下拉(全部/在途/已签收)" },
+        "detail": { "pageType": "详情页", "baseBoard": "admin-trailer-node-detail", "mode": "拖车作业节点时间线(提柜/入园/落柜/过磅)只读 + 操作时间/地点/柜号/重量 + 图片凭证", "actions": [] }
+      }
+    }
+  },
+
+  "overlapRules": {
+    "$description": "对每一屏分别评估，产出『高/低/零』三档之一，按 route 执行。评估结论在对话中向用户汇报，不写进 HTML。因管理端与司机端组件完全相同，大多数屏都会命中『高重合』——优先复制底板再替换为管理端业务内容。",
+    "unit": "逐屏（screen-by-screen）",
+    "tiers": [
+      {
+        "tier": "高重合",
+        "threshold": "该屏页型命中某 ownExample 或 driverExampleBaseBoard，核心区块覆盖 >= 70%",
+        "route": "以该底板复制微调；换成管理端业务字段与管理动作",
+        "allowedAdjustments": ["替换数据/文案/图标", "隐藏/删除当前场景用不到的子元素", "增减列表项/分组", "复用组件已有状态类", "把司机端『执行』动作按钮换成管理端『管理』动作"],
+        "forbidden": ["改组件 DOM 骨架", "重写组件样式", "新增规范外装饰", "为管理端另存 tokens/ui.css/assets 副本"]
+      },
+      {
+        "tier": "低重合",
+        "threshold": "无现成底板覆盖该页型/编排，但所需区块在 components 里都能找到",
+        "route": "用 components + ui.css 的 class 逐块拼装；每块可追溯到某组件 slug",
+        "forbidden": ["自造组件样式", "引用 examples 里未回收的页面私有 class"]
+      },
+      {
+        "tier": "零重合",
+        "threshold": "该屏页型在底板找不到、核心区块在 components 也无对应",
+        "route": "STOP — 停止生成该屏 HTML",
+        "onZero": {
+          "step1": "输出《缺口报告》：缺哪些组件/页型/图标/token，各属哪屏哪区块",
+          "step2": "询问用户二选一：(A) 由人类补齐后再生成；(B) 同意先自由发挥(产出视为非规范)",
+          "step3": "等待答复；未答复不得擅自发挥"
+        }
+      }
+    ]
+  },
+
+  "actionPlacementRule": {
+    "$description": "管理端专属歧义闸门（对应 SKILL.md 闸门 2）。管理动作放置存疑时必须先问人类。",
+    "whenUnclear": "必须询问人类：该管理动作是『页面级(列表顶部/详情底部 action-bar)』还是『卡片级(每条单据上的按钮)』？是否需要二次确认弹窗？",
+    "selectionUsesSheet": "选司机/选车辆/选时间等选择类动作一律用 sheet 动作面板或滚轮，禁止用居中 dialog 代替选择。",
+    "detailReadonlyByDefault": "管理端详情页默认只读展示 + 审核/处置动作；除『回单上传』外不放 uploader 与提交表单。"
+  },
+
+  "sourceUsageRules": {
+    "designSystemIsShared": "token/ui.css/组件/图标/自检脚本与司机端共用同一份(本 references)，管理端不另存副本。",
+    "ownExamplesAreFor": "管理端特有内容的整页复用底板(admin-home / admin-trailer-hub)。",
+    "driverBaseBoardsAreFor": "组件相同、内容相近时直接复制司机端 examples 作底板再替换业务内容。",
+    "componentsAreFor": "缺现成页面时的拼装单元（低重合时组合）。",
+    "authoritativeCssPath": "ui.css",
+    "deprecatedTrees": ["任何为管理端复制的 tokens/ui.css/assets 副本", "任何非本 references/ui.css 的样式路径"]
+  },
+
+  "homeEntryRule": {
+    "$description": "管理端使用金刚区首页作为统一入口（成品 admin-home.html，已按 Figma 还原）。",
+    "rule": "结构=绿色渐变头(状态栏白字 + 标题『信小递』+ 胶囊 + 头像 + 『您好，欢迎使用信小递』) → 白卡一金刚区(4 列，6 个业务入口：订单/运单/调度单/签收/回单上传/拖车业务) → 白卡二『预警预控』分组(超期预警 1 个入口)。无待派单/待审核快捷卡、无待办任务列表。骨架复用司机端 demo-home 渐变头+白卡+网格。",
+    "gridStructure": {
+      "白卡一(金刚区)": ["订单管理", "运单管理", "调度单管理", "签收管理", "回单上传", "拖车业务"],
+      "白卡二(预警预控分组)": ["超期预警"]
+    },
+    "gridIcons": {
+      "订单管理": "assets/shortcuts/icon/home/oa/dingdan.svg",
+      "运单管理": "assets/shortcuts/icon/home/oa/yundan.svg",
+      "调度单管理": "assets/shortcuts/icon/home/oa/diaodudan.svg",
+      "签收管理": "assets/shortcuts/icon/home/oa/qianshou.svg",
+      "回单上传": "assets/shortcuts/icon/home/oa/huidan.svg",
+      "拖车业务": "assets/shortcuts/icon/home/oa/tuoche.svg",
+      "超期预警": "assets/shortcuts/icon/home/oa/yujing.svg"
+    },
+    "$iconNote": "管理端金刚区用 icon/home/oa/ 下的彩色图标（自带渐变底），不是 shortcuts 根目录的单色版。",
+    "$endDisambiguation": "『回单上传』『拖车业务』与司机端同名，『签收管理↔待签收』『超期预警↔异常提报』与司机端同域；用户未说端时先按 SKILL.md 闸门 0 消歧，不得默认管理端。",
+    "forbidden": "不得把金刚区改成 emoji / 自造九宫格 / 去掉渐变头部 / 整块重画首页。"
+  },
+
+  "knownGaps": [
+    {
+      "gap": "管理端详情页/派单弹窗成品页",
+      "status": "deferred",
+      "note": "当前提供 admin-home(金刚区首页)、admin-trailer-hub(功能选择页)、admin-trailer-list(拖车列表页模板/用柜需求卡片) 三个自有成品页；其余列表页/详情页/派单·改派·核验·上传弹窗暂以司机端 driverExampleBaseBoards(demo-list / demo-trailer-detail / demo-trailer-weighing / demo-interaction 等) 作复用底板，按 moduleRoutes 复制微调。后续可按需补齐为 ownExamples。"
+    },
+    {
+      "gap": "管理动作细分图标(派单/改派/审核/介入)",
+      "status": "open",
+      "note": "优先复用 assets/ 现有图标；若管理动作缺对应图标，按零重合流程告知用户补图标，不自创内联 SVG。"
+    }
+  ]
+}

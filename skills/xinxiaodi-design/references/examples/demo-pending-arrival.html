@@ -6,6 +6,7 @@
 <title>信小递 - 待到库列表页</title>
 <link rel="stylesheet" href="../ui.css">
 <style>
+html { background: #333333; }
 body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
 
 /* 页面特有样式 */
@@ -74,7 +75,7 @@ body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
 <div style="padding: 8px 16px;">
   <div class="searchbox">
     <svg class="searchbox__icon" viewBox="0 0 24 24" fill="none" stroke="#BFC5CC" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-    <input class="searchbox__input" placeholder="请输入提货点/收货点地址" />
+    <input class="searchbox__input" placeholder="请输入提货点/收货点地址" readonly onclick="location.href='demo-search.html'" style="cursor:pointer;" />
     <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
   </div>
 </div>

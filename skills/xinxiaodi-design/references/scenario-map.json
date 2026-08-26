@@ -4,9 +4,21 @@
   "brandSlug": "xinxiaodi",
   "$purpose": "场景匹配评估的机读事实源。生成 HTML 前，agent 必须用本文件把 PRD 每一屏的场景与『示例成品页 / 组件库』做重合度比对，再按 overlapRules 走三档路由。示例页只作复用来源，组件库是拼装来源。",
 
-  "pageTypes": ["登录页", "首页", "功能选择页", "列表页", "操作页", "弹窗/面板", "详情页"],
+  "pageTypes": ["登录页", "首页", "功能选择页", "列表页", "搜索页", "操作页", "弹窗/面板", "详情页"],
+
+  "$sharedNote": "搜索页(demo-search)为司机端/管理端共用页型：组件·token·成品完全同一份，仅实例内容不同。列表页搜索框点击 → 跳搜索页。",
 
   "examplePages": [
+    {
+      "id": "demo-search",
+      "file": "examples/demo-search.html",
+      "pageType": "搜索页",
+      "shared": true,
+      "coversScenarios": ["列表页搜索框点击进入", "即时搜索(输入即出结果)", "默认/无结果空状态『未找到符合条件的单据』", "结果2行(编号+地址，命中词高亮)", "结果1行(名称，命中词高亮，含浅绿选中态)", "清除×"],
+      "composedOf": ["statusbar-titlebar"],
+      "notes": "共用页型(两端同一成品)。绿头(状态栏白字+返回+标题『搜索』+胶囊)内白色即时搜索框(放大镜 search_gray_16px + input + 清除× close_gray_full_16px，无查询按钮)；正文按输入 JS 切换 空状态/2行结果/1行结果。命中词高亮用品牌色 #00AAA6。列表页搜索框 readonly+onclick 跳本页。",
+      "entryFrom": "demo-list / demo-pending-arrival / demo-trailer-* 等列表页的搜索框"
+    },
     {
       "id": "demo-home",
       "file": "examples/demo-home.html",
@@ -201,6 +213,8 @@
 
   "homeEntryRule": {
     "$description": "首页功能入口歧义：PRD 未说清时必须先向人类确认，再按方式处理。首页一律复制 examples/demo-home.html，不整块重画。",
+    "gridEntries": ["待到库", "待提货", "待打卡", "待派送", "待运抵", "待签收", "回单上传", "送货交接", "历史记录", "服务反馈(仓库服务反馈中心)", "拖车业务", "异常提报", "待办中心"],
+    "$endDisambiguation": "『回单上传』『拖车业务』与管理端同名，『待签收↔签收管理』『异常提报↔超期预警』与管理端同域；用户只提名称未说端时，先按 SKILL.md 闸门 0 消歧(问司机端还是管理端)，不得默认司机端。",
     "whenUnclear": "必须询问人类：是『在首页金刚区新增功能球(新增模块)』还是『在现有功能球里改』？",
     "newBall": "引用 demo-home，在金刚区加一个新的真实 SVG 图标(+可选角标)，点击进入该功能的功能选择页/列表页；首页其余保持 demo-home 原样。",
     "modifyExisting": "引用 demo-home，不新增图标，点击对应现有功能球进入该功能的列表页；首页其余保持不变。",

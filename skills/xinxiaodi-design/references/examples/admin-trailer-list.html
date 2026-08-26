@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递管理端 - 拖车业务列表页模板（派车）</title>
+<!-- 管理端与司机端共用同一套设计系统核心：ui.css / assets 用本 references（../ui.css） -->
+<link rel="stylesheet" href="../ui.css">
+<style>
+html { background: #333333; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: #F3F5F7;
+  width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden;
+}
+
+/* 绿色头部：状态栏 + 标题栏 + 搜索框 + 场站切换（页面私有布局，内部全用组件库组件） */
+.list-header {
+  background: linear-gradient(90deg, #00B7AC 0%, #009B97 100%);
+  padding-bottom: 8px; position: sticky; top: 0; z-index: 50;
+}
+.list-header .searchbox { margin: 0 16px; }
+/* 场站切换下拉（绿头上居中白字 + 箭头） */
+.site-switch {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 10px 0 2px; color: #FFFFFF; font-size: 14px; line-height: 20px; cursor: pointer;
+}
+
+/* 用柜需求卡片：绿头条(用柜需求号) + 白底字段行 + 右下按钮，全部用 .card__* 组件类 */
+.card-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+/* 卡片字段行 label 固定宽度，值左对齐（复用 .card__field；此处约定 label 宽度） */
+.card__field { display: flex; align-items: flex-start; padding: 4px 0; }
+.card__field .card__field-label { width: 72px; flex-shrink: 0; }
+
+.load-hint { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 0 40px; }
+.load-hint .line { width: 16px; height: 0.5px; background: #C9CDD4; }
+.load-hint span { font-size: 12px; color: #C9CDD4; }
+
+.home-indicator {
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: #000000; border-radius: 999px; z-index: 50;
+}
+</style>
+</head>
+<body>
+
+<!-- 绿色头部 -->
+<div class="list-header">
+  <div class="statusbar statusbar--light">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_white.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--transparent">
+    <button class="titlebar__back" onclick="navigateBack()" aria-label="返回">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 6L9 12L15 18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="titlebar__title">派车</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_transparent.svg" height="32" alt="miniapp capsule" />
+    </span>
+  </div>
+
+  <!-- 有筛选的搜索框（组件库 searchbox：筛选下拉 + 分割线 + 放大镜 + 输入 + 查询） -->
+  <div class="searchbox">
+    <div class="searchbox__filter">
+      <div class="searchbox__filter-trigger" onclick="this.parentNode.classList.toggle('searchbox__filter--open')">
+        <span class="searchbox__filter-label">用柜需求</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="searchbox__filter-divider"></div>
+      <div class="searchbox__filter-menu">
+        <div class="searchbox__filter-item">用柜需求</div>
+        <div class="searchbox__filter-item">柜号</div>
+        <div class="searchbox__filter-item">车牌号</div>
+      </div>
+    </div>
+    <svg class="searchbox__icon" viewBox="0 0 24 24" fill="none" stroke="#BFC5CC" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input class="searchbox__input" placeholder="请输入查询内容" readonly onclick="location.href='demo-search.html'" style="cursor:pointer;" />
+    <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
+  </div>
+
+  <!-- 场站切换 -->
+  <div class="site-switch">
+    <span>青岛振翔</span>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/></svg>
+  </div>
+</div>
+
+<!-- 卡片列表（用柜需求卡片） -->
+<div class="card-list">
+
+  <div class="card">
+    <div class="card__order-top">
+      <span class="card__waybill-label">用柜需求号</span>
+      <span class="card__order-sap">HECPX1233313131313545</span>
+    </div>
+    <div class="card__body" style="padding: 12px 16px;">
+      <div class="card__field"><span class="card__field-label">船务公司</span><span class="card__field-value">xxxxx</span></div>
+      <div class="card__field"><span class="card__field-label">订单号</span><span class="card__field-value">xxxxxxx</span></div>
+      <div class="card__field"><span class="card__field-label">船名航次</span><span class="card__field-value">20GP</span></div>
+      <div class="card__field"><span class="card__field-label">截港时间</span><span class="card__field-value">2026-01-01 09:00:00</span></div>
+      <div class="card__waybill-actions"><button class="btn btn--sm btn--primary" onclick="location.href='admin-trailer-dispatch.html'">派车</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__order-top">
+      <span class="card__waybill-label">用柜需求号</span>
+      <span class="card__order-sap">HECPX1233313131313545</span>
+    </div>
+    <div class="card__body" style="padding: 12px 16px;">
+      <div class="card__field"><span class="card__field-label">船务公司</span><span class="card__field-value">xxxxx</span></div>
+      <div class="card__field"><span class="card__field-label">订单号</span><span class="card__field-value">xxxxxxx</span></div>
+      <div class="card__field"><span class="card__field-label">船名航次</span><span class="card__field-value">20GP</span></div>
+      <div class="card__field"><span class="card__field-label">截港时间</span><span class="card__field-value">2026-01-01 09:00:00</span></div>
+      <div class="card__waybill-actions"><button class="btn btn--sm btn--primary" onclick="location.href='admin-trailer-dispatch.html'">派车</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__order-top">
+      <span class="card__waybill-label">用柜需求号</span>
+      <span class="card__order-sap">HECPX1233313131313545</span>
+    </div>
+    <div class="card__body" style="padding: 12px 16px;">
+      <div class="card__field"><span class="card__field-label">船务公司</span><span class="card__field-value">xxxxx</span></div>
+      <div class="card__field"><span class="card__field-label">订单号</span><span class="card__field-value">xxxxxxx</span></div>
+      <div class="card__field"><span class="card__field-label">船名航次</span><span class="card__field-value">20GP</span></div>
+      <div class="card__field"><span class="card__field-label">截港时间</span><span class="card__field-value">2026-01-01 09:00:00</span></div>
+      <div class="card__waybill-actions"><button class="btn btn--sm btn--primary" onclick="location.href='admin-trailer-dispatch.html'">派车</button></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="load-hint"><div class="line"></div><span>已加载全部</span><div class="line"></div></div>
+
+<div class="home-indicator"></div>
+
+<script src="../ui.js"></script>
+<script>
+function navigateBack() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'page-trailer-hub' }, '*');
+  } else {
+    window.location.href = 'admin-trailer-hub.html';
+  }
+}
+</script>
+
+</body>
+</html>

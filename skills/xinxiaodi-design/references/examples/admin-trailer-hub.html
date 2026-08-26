@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递管理端 - 拖车业务</title>
+<!-- 管理端与司机端共用同一套设计系统核心：ui.css / assets 用本 references（../ui.css） -->
+<link rel="stylesheet" href="../ui.css">
+<style>
+html { background: #333333; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: var(--bg-1);
+  width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden;
+}
+.demo-topbar { position: sticky; top: 0; z-index: 50; }
+
+/* 业务卡片区（页面私有，复用司机端 demo-trailer 规范）
+   卡片填充=纯白底 + 顶部约16.6%高度的浅绿线性渐变（Figma 稿装饰色，token 无对应）。 */
+.trailer-section {
+  background:
+    linear-gradient(180deg, rgba(175, 240, 181, 0.2) 0%, transparent 16.6%),
+    var(--white);
+  border-radius: 10px;
+  margin: 12px 16px;
+  padding: 16px;
+}
+
+/* 功能球网格：3 列定宽，左对齐（本页仅 2 项，靠左排列，与 Figma 一致） */
+.trailer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 96px);
+  justify-content: start;
+  gap: 12px 11px;
+}
+
+.trailer-item {
+  width: 96px; height: 98px;
+  background: var(--white); border: 1px solid var(--border-1); border-radius: 4px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; position: relative; cursor: pointer;
+}
+.trailer-item__icon { width: 44px; height: 44px; flex-shrink: 0; }
+.trailer-item__label { font-size: 13px; line-height: 18px; color: var(--text-3); }
+
+.trailer-badge {
+  position: absolute; top: -10px; right: -10px;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  background: var(--danger-1); border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: var(--white); line-height: 1; z-index: 2;
+}
+
+.home-indicator {
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: #000000; border-radius: 999px; z-index: 50;
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏 -->
+<div class="demo-topbar">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_black.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="navigateToHome()" aria-label="返回">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="titlebar__title">拖车业务</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp capsule" />
+    </span>
+  </div>
+</div>
+
+<!-- 业务卡片区（管理端拖车：派车 / 业务监控） -->
+<div class="trailer-section">
+  <div class="trailer-grid">
+    <div class="trailer-item" onclick="go('paiche')">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/paiche.svg" alt="派车" />
+      <span class="trailer-item__label">派车</span>
+      <span class="trailer-badge">9</span>
+    </div>
+    <div class="trailer-item" onclick="go('jiankong')">
+      <img class="trailer-item__icon" src="../assets/icons/tuoche/yewujiankong.svg" alt="业务监控" />
+      <span class="trailer-item__label">业务监控</span>
+      <span class="trailer-badge">20</span>
+    </div>
+  </div>
+</div>
+
+<!-- 底部 Home Indicator -->
+<div class="home-indicator"></div>
+
+<script src="../ui.js"></script>
+<script>
+function navigateToHome() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'page-home' }, '*');
+  } else {
+    window.location.href = 'admin-home.html';
+  }
+}
+function go(t) {
+  var routes = {
+    paiche: 'admin-trailer-list.html',
+    jiankong: 'admin-trailer-monitor.html'
+  };
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'trailer-' + t }, '*');
+  } else {
+    window.location.href = routes[t] || 'admin-trailer-list.html';
+  }
+}
+</script>
+
+</body>
+</html>

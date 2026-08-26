@@ -6,6 +6,7 @@
 <title>信小递 - 待到库列表页</title>
 <link rel="stylesheet" href="../ui.css">
 <style>
+html { background: #333333; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'PingFang SC', -apple-system, sans-serif;
@@ -127,7 +128,7 @@ body {
 <!-- 搜索框 -->
 <div class="search-container">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="10" r="6" stroke="#BFC5CC" stroke-width="2"/><path d="M15 15l4 4" stroke="#BFC5CC" stroke-width="2" stroke-linecap="round"/></svg>
-  <input placeholder="请输入提货点/收货点地址" />
+  <input placeholder="请输入提货点/收货点地址" readonly onclick="location.href='demo-search.html'" style="cursor:pointer;" />
   <button class="search-btn">查询</button>
 </div>
 

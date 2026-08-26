@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递管理端 - 拖车业务 - 派车</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+html { background: #333333; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: #F3F5F7;
+  width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden;
+}
+
+/* 绿色头部 */
+.list-header {
+  background: linear-gradient(90deg, #00B7AC 0%, #009B97 100%);
+  padding-bottom: 12px; position: sticky; top: 0; z-index: 50;
+}
+.list-header .searchbox { margin: 0 16px; }
+
+/* 卡片列表 */
+.card-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+/* 子卡片字段双列布局 */
+.card__field { display: flex; align-items: flex-start; padding: 4px 0; }
+.card__field .card__field-label { width: 72px; flex-shrink: 0; }
+.card__fields-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+}
+
+/* 子卡片间分割线 */
+.sub-card { padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+.sub-card:last-child { border-bottom: none; }
+
+/* 加单+分配车辆司机 按钮组 */
+.card__waybill-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 8px; }
+
+.load-hint { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 0 40px; }
+.load-hint .line { width: 16px; height: 0.5px; background: #C9CDD4; }
+.load-hint span { font-size: 12px; color: #C9CDD4; }
+
+.home-indicator {
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: #000000; border-radius: 999px; z-index: 50;
+}
+</style>
+</head>
+<body>
+
+<!-- 绿色头部 -->
+<div class="list-header">
+  <div class="statusbar statusbar--light">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_white.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--transparent">
+    <button class="titlebar__back" onclick="navigateBack()" aria-label="返回">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 6L9 12L15 18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="titlebar__title">派车</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_transparent.svg" height="32" alt="miniapp capsule" />
+    </span>
+  </div>
+
+  <!-- 搜索框：筛选下拉(调度单号) + 输入 + 查询 -->
+  <div class="searchbox">
+    <div class="searchbox__filter">
+      <div class="searchbox__filter-trigger" onclick="this.parentNode.classList.toggle('searchbox__filter--open')">
+        <span class="searchbox__filter-label">调度单号</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#00AAA6" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="searchbox__filter-divider"></div>
+    </div>
+    <svg class="searchbox__icon" viewBox="0 0 24 24" fill="none" stroke="#BFC5CC" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input class="searchbox__input" placeholder="请输入查询内容" readonly onclick="location.href='demo-search.html'" style="cursor:pointer;" />
+    <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
+  </div>
+</div>
+
+<!-- 卡片列表 -->
+<div class="card-list">
+
+  <!-- 调度单分组 1：状态=打开 -->
+  <div class="card">
+    <div class="card__order-top">
+      <span class="card__order-sap">D23102702599</span>
+      <span class="tag tag--blue">打开</span>
+    </div>
+    <div class="card__body" style="padding: 12px 16px;">
+      <!-- 子卡片 1 -->
+      <div class="sub-card">
+        <div class="card__fields-grid">
+          <div class="card__field"><span class="card__field-label">运单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提柜点</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">柜子类型</span><span class="card__field-value">20GP</span></div>
+          <div class="card__field"><span class="card__field-label">司机</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">手机号</span><span class="card__field-value">13111111111</span></div>
+          <div class="card__field"><span class="card__field-label">车牌号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">要求装货时间</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">首个装货点</span><span class="card__field-value">XX</span></div>
+        </div>
+        <div class="card__waybill-actions">
+          <button class="btn btn--sm btn--light">移除</button>
+          <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#assignDialog')">分配车辆司机</button>
+        </div>
+      </div>
+      <!-- 子卡片 2 -->
+      <div class="sub-card">
+        <div class="card__fields-grid">
+          <div class="card__field"><span class="card__field-label">运单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提柜点</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">柜子类型</span><span class="card__field-value">20GP</span></div>
+          <div class="card__field"><span class="card__field-label">司机</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">手机号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">车牌号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">要求装货时间</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">首个装货点</span><span class="card__field-value">XX</span></div>
+        </div>
+        <div class="card__waybill-actions">
+          <button class="btn btn--sm btn--light">移除</button>
+          <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#assignDialog')">分配车辆司机</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 调度单分组 2：状态=生效（含加单+分配车辆司机按钮） -->
+  <div class="card">
+    <div class="card__order-top">
+      <span class="card__order-sap">D23102702599</span>
+      <span class="tag tag--green">生效</span>
+    </div>
+    <div class="card__body" style="padding: 12px 16px;">
+      <!-- 子卡片 1 -->
+      <div class="sub-card">
+        <div class="card__fields-grid">
+          <div class="card__field"><span class="card__field-label">运单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提柜点</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">柜子类型</span><span class="card__field-value">20GP</span></div>
+          <div class="card__field"><span class="card__field-label">司机</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">手机号</span><span class="card__field-value">13111111111</span></div>
+          <div class="card__field"><span class="card__field-label">车牌号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">要求装货时间</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">首个装货点</span><span class="card__field-value">XX</span></div>
+        </div>
+      </div>
+      <!-- 生效卡片底部按钮：加单 + 分配车辆司机 -->
+      <div class="card__waybill-actions">
+        <button class="btn btn--sm btn--light" onclick="XUI.openDialog('#addOrderDialog')">加单</button>
+        <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#assignDialog')">分配车辆司机</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 调度单分组 3：状态=打开 -->
+  <div class="card">
+    <div class="card__order-top">
+      <span class="card__order-sap">D23102702599</span>
+      <span class="tag tag--blue">打开</span>
+    </div>
+    <div class="card__body" style="padding: 12px 16px;">
+      <!-- 子卡片 1 -->
+      <div class="sub-card">
+        <div class="card__fields-grid">
+          <div class="card__field"><span class="card__field-label">运单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提单号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">提柜点</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">柜子类型</span><span class="card__field-value">40GP</span></div>
+          <div class="card__field"><span class="card__field-label">司机</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">手机号</span><span class="card__field-value">13111111111</span></div>
+          <div class="card__field"><span class="card__field-label">车牌号</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">要求装货时间</span><span class="card__field-value">XX</span></div>
+          <div class="card__field"><span class="card__field-label">首个装货点</span><span class="card__field-value">XX</span></div>
+        </div>
+        <div class="card__waybill-actions">
+          <button class="btn btn--sm btn--primary" onclick="XUI.openDialog('#assignDialog')">分配车辆司机</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="load-hint"><div class="line"></div><span>已加载全部</span><div class="line"></div></div>
+
+<div class="home-indicator"></div>
+
+<!-- 弹窗：分配车辆司机（居中 dialog + 表单字段） -->
+<div class="dialog-overlay" id="assignDialog">
+  <div class="dialog">
+    <div class="dialog__close" onclick="XUI.closeDialog('#assignDialog')">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="#86909C" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="dialog__title">分配车辆司机</div>
+    <div class="dialog__field">
+      <div class="dialog__field-label"><span class="dialog__field-required">*</span> 司机</div>
+      <div class="dialog__field-select">
+        <span>请选择司机</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#86909C" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="dialog__field">
+      <div class="dialog__field-label">手机号</div>
+      <div class="dialog__field-select dialog__field-select--filled">
+        <span>自动带出</span>
+      </div>
+    </div>
+    <div class="dialog__field">
+      <div class="dialog__field-label"><span class="dialog__field-required">*</span> 车牌号</div>
+      <div class="dialog__field-select">
+        <span>请选择车牌号</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#86909C" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="dialog__buttons" style="margin-top: 16px;">
+      <button class="btn btn--md btn--clear" onclick="XUI.closeDialog('#assignDialog')">取消</button>
+      <button class="btn btn--md btn--primary">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 弹窗：加单确认 -->
+<div class="dialog-overlay" id="addOrderDialog">
+  <div class="dialog">
+    <div class="dialog__title">确认加单？</div>
+    <div class="dialog__buttons">
+      <button class="btn btn--md btn--clear" onclick="XUI.closeDialog('#addOrderDialog')">取消</button>
+      <button class="btn btn--md btn--primary" onclick="XUI.closeDialog('#addOrderDialog')">确认</button>
+    </div>
+  </div>
+</div>
+
+<script src="../ui.js"></script>
+<script>
+function navigateBack() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'page-trailer-list' }, '*');
+  } else {
+    window.location.href = 'admin-trailer-list.html';
+  }
+}
+
+// 覆盖 XUI 的 open/close 以锁定滚动
+var _origOpen = XUI.openDialog;
+var _origClose = XUI.closeDialog;
+XUI.openDialog = function(sel) {
+  document.body.style.overflow = 'hidden';
+  _origOpen(sel);
+};
+XUI.closeDialog = function(sel) {
+  _origClose(sel);
+  document.body.style.overflow = '';
+};
+</script>
+</body>
+</html>

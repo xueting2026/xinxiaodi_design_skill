@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递管理端 - 首页</title>
+<!-- 管理端与司机端共用同一套设计系统核心：ui.css / assets 用本 references（../ui.css） -->
+<link rel="stylesheet" href="../ui.css">
+<style>
+html { background: #333333; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: #F3F5F7;
+  width: 375px; margin: 0 auto; min-height: 100vh;
+  overflow-x: hidden; position: relative;
+}
+body::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 194px;
+  background: linear-gradient(90deg, #00B7AC 0%, #009B97 100%); z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+.demo-topbar { position: relative; z-index: 1; }
+.statusbar { position: relative; z-index: 1; }
+.titlebar { position: relative; z-index: 1; }
+
+/* 渐变头部：头像 + 问候 */
+.header { padding: 20px 16px 60px; }
+.header .user-info { display: flex; align-items: center; gap: 10px; }
+.header .avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.header .avatar svg { width: 24px; height: 24px; fill: #FFFFFF; }
+.header .greeting { font-size: 16px; font-weight: 500; color: #FFFFFF; }
+
+.content { margin-top: -40px; padding: 0 16px 40px; }
+
+/* 白卡（金刚区容器 / 预警预控容器） */
+.panel {
+  background: #FFFFFF; border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 16px 8px; margin-bottom: 12px;
+}
+.panel--titled { padding-top: 16px; }
+.panel__title {
+  font-size: 14px; font-weight: 600; color: #1D2129;
+  padding: 0 8px; margin-bottom: 12px;
+}
+
+/* 金刚区 4 列网格 */
+.grid { display: flex; flex-wrap: wrap; }
+.grid-item {
+  width: 25%; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 8px 0; cursor: pointer;
+}
+.grid-item .grid-icon { width: 44px; height: 44px; }
+.grid-item .grid-icon img { width: 44px; height: 44px; display: block; }
+.grid-item .grid-label { font-size: 12px; color: #1D2129; text-align: center; line-height: 16px; }
+
+/* 页面水印（还原 Figma 淡化 logo 水印） */
+.watermark {
+  position: absolute; top: 320px; left: 0; right: 0; text-align: center;
+  font-size: 20px; letter-spacing: 4px; color: rgba(29,33,41,0.06);
+  z-index: 0; pointer-events: none;
+}
+
+.home-indicator {
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: #000000; border-radius: 999px; z-index: 50;
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏（demo-topbar，开发时可整体隐藏） -->
+<div class="demo-topbar">
+  <div class="statusbar statusbar--light">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_white.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--transparent">
+    <span class="titlebar__title">信小递</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_transparent.svg" height="32" alt="miniapp capsule" />
+    </span>
+  </div>
+</div>
+
+<!-- 渐变头部 -->
+<div class="header">
+  <div class="user-info">
+    <div class="avatar"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+    <span class="greeting">您好，欢迎使用信小递</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- 白卡一：金刚区（6 个业务模块入口） -->
+  <div class="panel">
+    <div class="grid">
+      <div class="grid-item" onclick="go('order')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/dingdan.svg" alt="订单管理" /></div><span class="grid-label">订单管理</span></div>
+      <div class="grid-item" onclick="go('waybill')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/yundan.svg" alt="运单管理" /></div><span class="grid-label">运单管理</span></div>
+      <div class="grid-item" onclick="go('dispatch')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/diaodudan.svg" alt="调度单管理" /></div><span class="grid-label">调度单管理</span></div>
+      <div class="grid-item" onclick="go('signing')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/qianshou.svg" alt="签收管理" /></div><span class="grid-label">签收管理</span></div>
+      <div class="grid-item" onclick="go('receipt')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/huidan.svg" alt="回单上传" /></div><span class="grid-label">回单上传</span></div>
+      <div class="grid-item" onclick="go('trailer')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/tuoche.svg" alt="拖车业务" /></div><span class="grid-label">拖车业务</span></div>
+    </div>
+  </div>
+
+  <!-- 白卡二：预警预控（超期预警） -->
+  <div class="panel panel--titled">
+    <div class="panel__title">预警预控</div>
+    <div class="grid">
+      <div class="grid-item" onclick="go('overdue')"><div class="grid-icon"><img src="../assets/shortcuts/icon/home/oa/yujing.svg" alt="超期预警" /></div><span class="grid-label">超期预警</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="watermark">信小递</div>
+
+<!-- 底部 Home Indicator -->
+<div class="home-indicator"></div>
+
+<script>
+function go(m) {
+  var routes = {
+    order: 'admin-trailer-list.html',
+    waybill: 'admin-trailer-list.html',
+    dispatch: 'admin-trailer-list.html',
+    signing: 'admin-trailer-list.html',
+    receipt: 'admin-trailer-list.html',
+    trailer: 'admin-trailer-hub.html',
+    warning: 'admin-trailer-list.html'
+  };
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'module-' + m }, '*');
+  } else {
+    window.location.href = routes[m] || 'admin-trailer-hub.html';
+  }
+}
+</script>
+
+</body>
+</html>

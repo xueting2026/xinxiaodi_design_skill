@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递管理端 - 节点操作明细</title>
+<link rel="stylesheet" href="../ui.css">
+<style>
+html { background: #333333; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: #F3F5F7;
+  width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden;
+}
+
+/* 绿色头部 */
+.page-header {
+  background: linear-gradient(90deg, #00B7AC 0%, #009B97 100%);
+  padding-bottom: 12px;
+}
+
+/* 时间线卡片 */
+.timeline-card {
+  margin: 12px 16px; background: var(--white); border-radius: 10px; padding: 16px;
+}
+
+/* 时间线 */
+.timeline-item { display: flex; gap: 12px; position: relative; }
+
+/* 左侧轴：圆点 + 连线 */
+.timeline-item__left {
+  display: flex; flex-direction: column; align-items: center; width: 12px; flex-shrink: 0; padding-top: 4px;
+}
+.timeline-item__dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--vi-2); flex-shrink: 0;
+}
+.timeline-item__dot--grey { background: #C9CDD4; }
+.timeline-item__line { width: 1px; flex: 1; background: var(--vi-2); margin-top: 4px; min-height: 8px; }
+.timeline-item:last-child .timeline-item__line { display: none; }
+
+/* 右侧内容 */
+.timeline-item__content { flex: 1; padding-bottom: 20px; }
+.timeline-item:last-child .timeline-item__content { padding-bottom: 0; }
+.timeline-item__title {
+  font-size: 14px; font-weight: 500; color: var(--text-1); line-height: 20px; margin-bottom: 8px;
+}
+.timeline-item__fields { display: flex; flex-direction: column; gap: 4px; }
+.timeline-item__field {
+  display: flex; align-items: flex-start;
+}
+.timeline-item__field-label {
+  font-size: 12px; color: var(--text-2); line-height: 18px; width: 72px; flex-shrink: 0;
+}
+.timeline-item__field-value {
+  font-size: 12px; color: var(--text-3); line-height: 18px;
+}
+
+/* 图片区 */
+.timeline-item__photos {
+  display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+}
+.timeline-item__photo {
+  width: 56px; height: 56px; border-radius: 4px; background: #F2F3F5; object-fit: cover;
+  border: 0.5px solid #E5E6EB;
+}
+
+.home-indicator {
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: #000000; border-radius: 999px; z-index: 50;
+}
+</style>
+</head>
+<body>
+
+<!-- 绿色头部 -->
+<div class="page-header">
+  <div class="statusbar statusbar--light">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_white.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--transparent">
+    <button class="titlebar__back" onclick="navigateBack()" aria-label="返回">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 6L9 12L15 18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="titlebar__title">节点操作明细</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_transparent.svg" height="32" alt="miniapp capsule" />
+    </span>
+  </div>
+</div>
+
+<!-- 时间线白卡片 -->
+<div class="timeline-card">
+
+  <!-- 节点 1：提柜 -->
+  <div class="timeline-item">
+    <div class="timeline-item__left">
+      <div class="timeline-item__dot"></div>
+      <div class="timeline-item__line"></div>
+    </div>
+    <div class="timeline-item__content">
+      <div class="timeline-item__title">提柜</div>
+      <div class="timeline-item__fields">
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">操作时间</span>
+          <span class="timeline-item__field-value">2026-01-15 08:30:00</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">提柜地点</span>
+          <span class="timeline-item__field-value">青岛港前湾港区</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">柜号</span>
+          <span class="timeline-item__field-value">CSLU2345678</span>
+        </div>
+      </div>
+      <div class="timeline-item__photos">
+        <div class="timeline-item__photo"></div>
+        <div class="timeline-item__photo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 节点 2：入园 -->
+  <div class="timeline-item">
+    <div class="timeline-item__left">
+      <div class="timeline-item__dot"></div>
+      <div class="timeline-item__line"></div>
+    </div>
+    <div class="timeline-item__content">
+      <div class="timeline-item__title">入园</div>
+      <div class="timeline-item__fields">
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">操作时间</span>
+          <span class="timeline-item__field-value">2026-01-15 09:15:00</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">入园地点</span>
+          <span class="timeline-item__field-value">海信物流园A区</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 节点 3：落柜 -->
+  <div class="timeline-item">
+    <div class="timeline-item__left">
+      <div class="timeline-item__dot"></div>
+      <div class="timeline-item__line"></div>
+    </div>
+    <div class="timeline-item__content">
+      <div class="timeline-item__title">落柜</div>
+      <div class="timeline-item__fields">
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">操作时间</span>
+          <span class="timeline-item__field-value">2026-01-15 09:45:00</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">落柜地点</span>
+          <span class="timeline-item__field-value">海信物流园A区3号库位</span>
+        </div>
+      </div>
+      <div class="timeline-item__photos">
+        <div class="timeline-item__photo"></div>
+        <div class="timeline-item__photo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 节点 4：过磅 -->
+  <div class="timeline-item">
+    <div class="timeline-item__left">
+      <div class="timeline-item__dot"></div>
+      <div class="timeline-item__line"></div>
+    </div>
+    <div class="timeline-item__content">
+      <div class="timeline-item__title">过磅</div>
+      <div class="timeline-item__fields">
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">操作时间</span>
+          <span class="timeline-item__field-value">2026-01-15 10:00:00</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">毛重</span>
+          <span class="timeline-item__field-value">25,600 kg</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">皮重</span>
+          <span class="timeline-item__field-value">3,800 kg</span>
+        </div>
+        <div class="timeline-item__field">
+          <span class="timeline-item__field-label">净重</span>
+          <span class="timeline-item__field-value">21,800 kg</span>
+        </div>
+      </div>
+      <div class="timeline-item__photos">
+        <div class="timeline-item__photo"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="home-indicator"></div>
+
+<script src="../ui.js"></script>
+<script>
+function navigateBack() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'page-trailer-monitor' }, '*');
+  } else {
+    window.location.href = 'admin-trailer-monitor.html';
+  }
+}
+</script>
+</body>
+</html>

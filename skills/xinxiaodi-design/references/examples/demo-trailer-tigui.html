@@ -6,6 +6,7 @@
 <title>信小递 - 提柜列表</title>
 <link rel="stylesheet" href="../ui.css">
 <style>
+html { background: #333333; }
 body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
 .page-sticky { position: sticky; top: 0; z-index: 50; }
 </style>
@@ -47,7 +48,7 @@ body { width: 375px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
         <div class="searchbox__filter-item">订舱号</div>
       </div>
     </div>
-    <input class="searchbox__input" placeholder="请输入查询内容" />
+    <input class="searchbox__input" placeholder="请输入查询内容" readonly onclick="location.href='demo-search.html'" style="cursor:pointer;" />
     <div class="searchbox__clear"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1L7 7M7 1L1 7" stroke="#FFF" stroke-width="1.2" stroke-linecap="round"/></svg></div>
     <div class="searchbox__query"><span class="searchbox__query-text">查询</span></div>
   </div>
