@@ -232,7 +232,7 @@ node .kiro/skills/xinxiaodi-design/scripts/verify-prototype.mjs <原型HTML的�
 | 页型 | 何时用 | 参考成品 |
 |------|--------|----------|
 | 金刚区首页 | 业务方统一入口（六模块） | `examples/admin-home.html` |
-| 列表页（最核心） | 浏览/筛选/批量管理单据 | 司机端 `demo-list.html`；拖车列表模板 `admin-trailer-list.html`（用柜需求卡片） |
+| 列表页（最核心） | 浏览/筛选/批量管理单据 | 司机端 `demo-list.html`；拖车列表模板 `admin-trailer-list.html`（用柜需求卡片）；通用单据列表模板 `admin-order-list.html`（订单/运单/调度单等通用字段） |
 | 功能选择页/Hub | 模块多子功能的二级入口 | `admin-trailer-hub.html` |
 | 搜索页（**共用**） | 点列表页搜索框进入，即时搜索 + 命中词高亮 | `demo-search.html`（两端共用，同一成品） |
 | 详情页 | 单据全量 + 审核/改派/介入 | 司机端 `demo-trailer-detail.html` 作底板 |
@@ -255,6 +255,6 @@ node .kiro/skills/xinxiaodi-design/scripts/verify-prototype.mjs <原型HTML的�
 | `references/examples/demo-*.html` | 司机端页型成品 | 司机端 |
 | `references/Design-admin.md` | 管理端业务规则层（金刚区首页 + 六模块） | 管理端 |
 | `references/scenario-map-admin.json` | 管理端场景路由 | 管理端 |
-| `references/examples/admin-*.html` | 管理端页型成品（`admin-home` / `admin-trailer-hub`） | 管理端 |
+| `references/examples/admin-*.html` | 管理端页型成品（`admin-home` / `admin-trailer-hub` / `admin-order-list`） | 管理端 |
 
 **拿不准就回到 `references/tokens.json` 和对应端的 `Design*.md`，不要猜。你的工作是执行这套规范，不是设计。**
