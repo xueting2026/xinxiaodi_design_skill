@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>信小递管理端 - 订单管理列表页</title>
+<!-- 管理端与司机端共用同一套设计系统核心：ui.css / assets 用本 references（../ui.css） -->
+<link rel="stylesheet" href="../ui.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', -apple-system, sans-serif;
+  background: #F3F5F7;
+  width: 375px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.demo-topbar { position: sticky; top: 0; z-index: 50; }
+
+.search-container {
+  height: 36px; background: #FFFFFF; border-radius: 4px;
+  display: flex; align-items: center; padding: 0 4px 0 8px; gap: 4px;
+  margin: 8px 16px;
+}
+.search-container input {
+  flex: 1; border: none; background: transparent;
+  font-size: 14px; color: #1D2129; outline: none;
+}
+.search-container input::placeholder { color: #C9CDD4; }
+.search-container .search-btn {
+  height: 28px; padding: 0 12px; background: #00AAA6; border: none;
+  border-radius: 4px; font-size: 14px; color: #FFFFFF; cursor: pointer;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.tab-bar {
+  display: flex; overflow-x: auto; padding: 8px 16px; gap: 8px; scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-item {
+  flex-shrink: 0; height: 30px; padding: 4px 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #1D2129; background: #FFFFFF;
+  border-radius: 4px; cursor: pointer; white-space: nowrap;
+}
+.tab-item.active { background: #00AAA6; color: #FFFFFF; }
+
+.btn-primary {
+  padding: 6px 8px; background: #00AAA6; border: none; border-radius: 4px;
+  font-size: 14px; color: #FFFFFF; cursor: pointer; font-family: 'PingFang SC', sans-serif;
+}
+.btn-ghost {
+  padding: 6px 8px; background: #FFFFFF; border: 1px solid #C9CDD4; border-radius: 4px;
+  font-size: 14px; color: #4E5969; cursor: pointer; font-family: 'PingFang SC', sans-serif;
+}
+
+/* 管理端专属：卡片内的管理维度行（承运司机 / 车牌 / 网点），用 color-fill-2 内嵌区 */
+.card__manage {
+  display: flex; flex-wrap: wrap; gap: 4px 16px;
+  background: #F2F3F5; border-radius: 4px; padding: 8px;
+  margin-top: 8px;
+}
+.card__manage-item { font-size: 12px; color: #4E5969; line-height: 18px; }
+.card__manage-item b { font-weight: 400; color: #1D2129; }
+
+.order-status { font-size: 12px; line-height: 20px; }
+.order-status--pending { color: #165DFF; }
+.order-status--doing { color: #00AAA6; }
+.order-status--error { color: #F53F3F; }
+.order-status--done { color: #86909C; }
+
+.load-hint { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 0 40px; }
+.load-hint .line { width: 16px; height: 0.5px; background: #C9CDD4; }
+.load-hint span { font-size: 12px; color: #C9CDD4; }
+</style>
+</head>
+<body>
+
+<!-- 顶部：状态栏 + 标题栏（demo-topbar，开发时可整体隐藏） -->
+<div class="demo-topbar">
+  <div class="statusbar statusbar--dark">
+    <span class="statusbar__time">9:41</span>
+    <div class="statusbar__icons">
+      <img src="../assets/icons/bar_status_black.svg" height="12" alt="status icons" />
+    </div>
+  </div>
+  <div class="titlebar titlebar--solid">
+    <button class="titlebar__back" onclick="navigateBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 6L9 12L15 18" stroke="#1D2129" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="titlebar__title">订单管理</span>
+    <span class="titlebar__right titlebar__capsule">
+      <img src="../assets/icons/iPhoneX/miniapp/bar_navbar_black.svg" height="32" alt="miniapp capsule" />
+    </span>
+  </div>
+</div>
+
+<!-- 搜索框 -->
+<div class="search-container">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="10" r="6" stroke="#C9CDD4" stroke-width="2"/><path d="M15 15l4 4" stroke="#C9CDD4" stroke-width="2" stroke-linecap="round"/></svg>
+  <input placeholder="请输入订单号 / 客户名称" />
+  <button class="search-btn">查询</button>
+</div>
+
+<!-- Tab 状态分组 -->
+<div class="tab-bar">
+  <div class="tab-item active">全部</div>
+  <div class="tab-item">待调度</div>
+  <div class="tab-item">调度中</div>
+  <div class="tab-item">已完成</div>
+  <div class="tab-item">异常</div>
+</div>
+
+<!-- 订单卡片列表（管理端：显式带客户 + 承运司机 + 车牌等管理维度） -->
+<div class="card-list">
+
+  <div class="card">
+    <div class="card__location">
+      <div class="card__location-row"><span class="tag tag--blue">订单</span><span class="card__addr">SO2211160021</span></div>
+      <div class="card__warehouse">客户：海信（山东）营销股份有限公司</div>
+      <div class="card__cargo"><span>海信空调110件（13.0m³），电视99件（11.0m³）</span></div>
+    </div>
+    <div class="card__manage">
+      <span class="card__manage-item">承运司机：<b>张建国</b></span>
+      <span class="card__manage-item">车牌：<b>鲁UN521E</b></span>
+      <span class="card__manage-item">所属网点：<b>青岛市南网点</b></span>
+    </div>
+    <div class="card__divider card__divider--full"></div>
+    <div class="card__dispatch">
+      <div class="card__dispatch-row"><span class="card__dispatch-plate">收货点</span><span class="card__dispatch-time">要求送达：2022/11/18 12:00</span></div>
+      <div class="card__cargo"><span>江苏省淮安市淮阴区新渡口</span></div>
+    </div>
+    <div class="card__footer card__footer--between">
+      <span class="card__stats"><span class="order-status order-status--pending">待调度</span> · 2单6件</span>
+      <div class="card__actions"><button class="btn-ghost">详情</button><button class="btn-primary">拆分调度</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__location">
+      <div class="card__location-row"><span class="tag tag--blue">订单</span><span class="card__addr">SO2211160018</span></div>
+      <div class="card__warehouse">客户：青岛日日顺物流有限公司</div>
+      <div class="card__cargo"><span>冰箱60件（8.4m³），洗衣机40件（6.0m³）</span></div>
+    </div>
+    <div class="card__manage">
+      <span class="card__manage-item">承运司机：<b>李伟</b></span>
+      <span class="card__manage-item">车牌：<b>鲁B·8823K</b></span>
+      <span class="card__manage-item">所属网点：<b>青岛城阳网点</b></span>
+    </div>
+    <div class="card__divider card__divider--full"></div>
+    <div class="card__dispatch">
+      <div class="card__dispatch-row"><span class="card__dispatch-plate">收货点</span><span class="card__dispatch-time">要求送达：2022/11/17 18:00</span></div>
+      <div class="card__cargo"><span>扬州冰箱CDC厂区</span></div>
+    </div>
+    <div class="card__footer card__footer--between">
+      <span class="card__stats"><span class="order-status order-status--doing">调度中</span> · 2单4件</span>
+      <div class="card__actions"><button class="btn-ghost">详情</button><button class="btn-primary">拆分调度</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__location">
+      <div class="card__location-row"><span class="tag tag--orange">2C</span><span class="card__addr">SO2211150097</span></div>
+      <div class="card__warehouse">客户：终端零售配送（2C）</div>
+      <div class="card__cargo"><span>电视12件（1.4m³）</span></div>
+    </div>
+    <div class="card__manage">
+      <span class="card__manage-item">承运司机：<b>王强</b></span>
+      <span class="card__manage-item">车牌：<b>鲁U·6601F</b></span>
+      <span class="card__manage-item">所属网点：<b>平度网点</b></span>
+    </div>
+    <div class="card__divider card__divider--full"></div>
+    <div class="card__dispatch">
+      <div class="card__dispatch-row"><span class="card__dispatch-plate">收货点</span><span class="card__dispatch-time">要求送达：2022/11/16 09:00</span></div>
+      <div class="card__cargo"><span>青岛市市南区江西路11号</span></div>
+    </div>
+    <div class="card__footer card__footer--between">
+      <span class="card__stats"><span class="order-status order-status--error">异常</span> · 1单12件</span>
+      <div class="card__actions"><button class="btn-ghost">详情</button><button class="btn-primary">拆分调度</button></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 底部加载提示 -->
+<div class="load-hint"><div class="line"></div><span>已加载90天内全部</span><div class="line"></div></div>
+
+<script>
+function navigateBack() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: 'navigate', target: 'back' }, '*');
+  }
+}
+</script>
+
+</body>
+</html>
